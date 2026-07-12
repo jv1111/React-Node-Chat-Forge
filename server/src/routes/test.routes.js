@@ -1,9 +1,16 @@
 const express = require("express");
+
 const router = express.Router();
 
-const { getMessage, postMessage } = require("../controllers/test.controller");
+const {
+  getTests,
+  createTest,
+  updateTest,
+  deleteTest,
+} = require("../controllers/test.controller");
 
-router.get("/", getMessage);
-router.post("/", postMessage);
+router.route("/").get(getTests).post(createTest);
+
+router.route("/:id").put(updateTest).delete(deleteTest);
 
 module.exports = router;
