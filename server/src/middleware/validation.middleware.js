@@ -45,7 +45,6 @@ const validateRegister = (req, res, next) => {
     });
   }
 
-  // Store sanitized values
   req.body = {
     username,
     email,

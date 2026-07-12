@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 
 const userService = require("./user.service");
+const { generateAccessToken } = require("../utils/jwt");
 
 const register = async ({ username, email, password }) => {
   const emailExists = await userService.findByEmail(email);
@@ -45,10 +46,15 @@ const login = async ({ email, password }) => {
     throw new Error(INVALID_CREDENTIALS);
   }
 
+  const accessToken = generateAccessToken(user);
+
   return {
-    id: user.id,
-    username: user.username,
-    email: user.email,
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    },
+    accessToken,
   };
 };
 
