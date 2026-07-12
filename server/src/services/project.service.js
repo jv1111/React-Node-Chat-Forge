@@ -1,4 +1,10 @@
+const crypto = require("crypto");
+
 const Project = require("../models/project.model");
+
+const generateProjectCode = () => {
+  return `prj_${crypto.randomBytes(8).toString("hex")}`;
+};
 
 const createProject = async (developerId, name) => {
   const existingProject = await Project.findOne({
@@ -10,9 +16,16 @@ const createProject = async (developerId, name) => {
     throw new Error("A project with this name already exists.");
   }
 
+  let projectCode;
+
+  do {
+    projectCode = generateProjectCode();
+  } while (await Project.exists({ projectCode }));
+
   const project = await Project.create({
     developer: developerId,
     name,
+    projectCode,
   });
 
   return project;

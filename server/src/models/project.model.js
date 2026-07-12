@@ -15,6 +15,14 @@ const projectSchema = new mongoose.Schema(
       trim: true,
       maxlength: 100,
     },
+
+    projectCode: {
+      type: String,
+      required: true,
+      unique: true,
+      immutable: true,
+      index: true,
+    },
   },
   {
     timestamps: true,
