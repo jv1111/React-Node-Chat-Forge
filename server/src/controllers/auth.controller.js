@@ -1,4 +1,5 @@
 const authService = require("../services/auth.service");
+const userService = require("../services/user.service");
 
 const register = async (req, res) => {
   try {
@@ -34,7 +35,31 @@ const login = async (req, res) => {
   }
 };
 
+const me = async (req, res) => {
+  try {
+    const user = await userService.getCurrentUser(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
+  me,
 };

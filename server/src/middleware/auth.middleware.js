@@ -13,12 +13,12 @@ const authenticate = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = verifyAccessToken(token);
+    const { id } = verifyAccessToken(token);
 
-    req.user = decoded;
+    req.user = { id };
 
     next();
-  } catch {
+  } catch (error) {
     return res.status(401).json({
       success: false,
       message: "Invalid or expired token.",

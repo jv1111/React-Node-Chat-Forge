@@ -31,6 +31,10 @@ const getAllUsers = async () => {
   return await User.find();
 };
 
+const getCurrentUser = async (id) => {
+  return await User.findById(id).select("-password");
+};
+
 module.exports = {
   findById,
   findByEmail,
@@ -39,4 +43,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getAllUsers,
+  getCurrentUser,
 };
