@@ -1,4 +1,4 @@
-const Project = require("../models/project.model");
+const projectService = require("./project.service");
 const Client = require("../models/client.model");
 const { capitalize } = require("../utils/format");
 
@@ -17,11 +17,7 @@ const createClient = async ({
     lastName: capitalize(lastName),
   };
 
-  const project = await Project.findOne({ projectCode });
-
-  if (!project) {
-    throw new Error("Project not found.");
-  }
+  const project = await projectService.findByProjectCode(projectCode);
 
   const existingClient = await Client.findOne({
     project: project._id,
@@ -38,6 +34,20 @@ const createClient = async ({
   });
 };
 
+const findById = async (projectId, clientId) => {
+  const client = await Client.findOne({
+    _id: clientId,
+    project: projectId,
+  });
+
+  if (!client) {
+    throw new Error("Client not found.");
+  }
+
+  return client;
+};
+
 module.exports = {
   createClient,
+  findById,
 };
