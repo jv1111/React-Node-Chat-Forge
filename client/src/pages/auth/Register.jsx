@@ -9,6 +9,7 @@ import Logo from "../../components/auth/Logo";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import PasswordInput from "../../components/auth/PasswordInput";
+import { registerSchema } from "../../validation";
 
 const initialValues = {
   username: "",
@@ -78,7 +79,13 @@ const Register = () => {
           description="Start building with the ChatForge API for free."
         />
 
-        <Formik initialValues={initialValues} onSubmit={register}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={registerSchema}
+          validateOnBlur
+          validateOnChange={false}
+          onSubmit={register}
+        >
           {({ isSubmitting }) => (
             <Form className="flex flex-col gap-5">
               <Input
