@@ -1,7 +1,8 @@
-export default function App() {
-  return (
-    <main className="bg-forge flex min-h-screen items-center justify-center">
-      <h1 className="text-primary text-4xl font-bold">ChatForge</h1>
-    </main>
-  );
-}
+import { RouterProvider } from "react-router-dom";
+import router from "./router";
+
+const App = () => {
+  return <RouterProvider router={router} />;
+};
+
+export default App;

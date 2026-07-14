@@ -21,17 +21,18 @@
   *,
   *::before,
   *::after {
-    box-sizing: border-box;
+    @apply box-border;
   }
 
   html,
   body,
   #root {
-    min-height: 100%;
+    @apply min-h-full;
   }
 
   body {
-    margin: 0;
+    @apply m-0;
+
     font-family:
       Inter,
       system-ui,
@@ -45,16 +46,67 @@
   }
 
   button {
-    cursor: pointer;
+    @apply cursor-pointer;
   }
 
   a {
+    @apply no-underline;
     color: inherit;
-    text-decoration: none;
   }
 }
 
 @layer components {
+  .input-auth {
+    @apply w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder:text-white/30 outline-none transition;
+  }
+
+  .input-auth:focus {
+    @apply border-primary/50 ring-2 ring-primary/25;
+  }
+
+  .label-auth {
+    @apply text-xs font-medium text-white/60;
+  }
+
+  .btn-primary {
+    @apply flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition;
+  }
+
+  .btn-primary:hover {
+    @apply brightness-105 shadow-primary/30;
+  }
+
+  .btn-primary:active {
+    @apply brightness-95;
+  }
+
+  .btn-primary:disabled {
+    @apply cursor-not-allowed opacity-70;
+  }
+
+  .auth-card {
+    @apply grid w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-white/2 shadow-2xl shadow-black/50 backdrop-blur-xl md:grid-cols-2;
+  }
+
+  .auth-form {
+    @apply flex flex-col justify-center gap-8 p-8 sm:p-10;
+  }
+
+  .auth-panel {
+    @apply relative hidden flex-col justify-between gap-10 border-r border-white/10 bg-linear-to-br from-white/5 to-transparent p-10 md:flex;
+  }
+
+  .auth-feature-list {
+    @apply flex flex-col gap-2.5 text-sm text-white/50;
+  }
+
+  .auth-title {
+    @apply text-2xl font-semibold tracking-tight text-white;
+  }
+
+  .auth-description {
+    @apply mt-1.5 text-sm text-white/50;
+  }
 }
 
 @layer utilities {
