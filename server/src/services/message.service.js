@@ -38,6 +38,15 @@ const sendMessage = async ({
   };
 };
 
+const getConversationMessages = async (conversationId) => {
+  return await Message.find({
+    conversation: conversationId,
+  })
+    .populate("sender", "firstName middleName lastName")
+    .sort({ createdAt: 1 });
+};
+
 module.exports = {
   sendMessage,
+  getConversationMessages,
 };
