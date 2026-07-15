@@ -20,12 +20,21 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const result = await authService.login(req.body);
+    const { user, accessToken } = await authService.login(req.body);
+
+    res.cookie(process.env.COOKIE_NAME || "accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: Number(process.env.COOKIE_MAX_AGE), // 15 minutes
+    });
 
     return res.status(200).json({
       success: true,
       message: "Login successful.",
-      data: result,
+      data: {
+        user,
+      },
     });
   } catch (error) {
     return res.status(401).json({

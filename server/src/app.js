@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const testRoutes = require("./routes/test.routes");
 const authRoutes = require("./routes/auth.routes");
@@ -17,6 +18,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/test", testRoutes);
 app.use("/api/auth", authRoutes);
