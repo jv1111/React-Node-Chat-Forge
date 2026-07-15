@@ -1,5 +1,5 @@
 import { Formik, Form } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import AuthCard from "../../components/auth/AuthCard";
 import AuthFormHeader from "../../components/auth/AuthFormHeader";
@@ -10,20 +10,31 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import PasswordInput from "../../components/auth/PasswordInput";
 import { registerSchema } from "../../validation";
+import * as authService from "../../services/auth.service";
 
 const initialValues = {
   username: "",
-  email: "",
   password: "",
   confirmPassword: "",
 };
 
 const Register = () => {
-  const register = async (values, { setSubmitting }) => {
-    try {
-      console.log(values);
+  const navigate = useNavigate();
 
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+  const register = async (values, { setSubmitting, setStatus }) => {
+    try {
+      setStatus(null);
+
+      const response = await authService.register({
+        username: values.username,
+        password: values.password,
+      });
+
+      console.log(response);
+
+      navigate("/");
+    } catch (error) {
+      setStatus(error.response?.data?.message ?? "Something went wrong.");
     } finally {
       setSubmitting(false);
     }
@@ -86,21 +97,13 @@ const Register = () => {
           validateOnChange={false}
           onSubmit={register}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, status }) => (
             <Form className="flex flex-col gap-5">
               <Input
                 name="username"
                 label="Username"
                 placeholder="johnsmith"
                 autoComplete="username"
-              />
-
-              <Input
-                name="email"
-                label="Email"
-                type="email"
-                placeholder="you@company.com"
-                autoComplete="email"
               />
 
               <PasswordInput
@@ -116,6 +119,12 @@ const Register = () => {
                 placeholder="Re-enter your password"
                 autoComplete="new-password"
               />
+
+              {status && (
+                <p className="rounded-lg border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">
+                  {status}
+                </p>
+              )}
 
               <Button type="submit" loading={isSubmitting}>
                 Create Account

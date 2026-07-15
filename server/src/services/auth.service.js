@@ -27,7 +27,15 @@ const register = async ({ username, password }) => {
 const login = async ({ username, password }) => {
   const INVALID_CREDENTIALS = "Invalid username or password.";
 
+  console.log("Request:");
+  console.log({
+    username,
+    password,
+  });
+
   const user = await userService.findByUsername(username, "+password");
+  console.log("\nUser from database:");
+  console.log(user);
 
   if (!user) {
     throw new Error(INVALID_CREDENTIALS);

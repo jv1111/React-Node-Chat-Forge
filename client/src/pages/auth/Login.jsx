@@ -1,24 +1,46 @@
 import { Formik, Form } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import AuthCard from "../../components/auth/AuthCard";
 import AuthFormHeader from "../../components/auth/AuthFormHeader";
 import AuthPanel from "../../components/auth/AuthPanel";
 import Logo from "../../components/auth/Logo";
-import PasswordInput from "../../components/auth/PasswordInput";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import PasswordInput from "../../components/auth/PasswordInput";
+
+import { loginSchema } from "../../validation";
+import * as authService from "../../services/auth.service";
 
 const initialValues = {
-  email: "",
+  username: "",
   password: "",
 };
 
 const Login = () => {
-  const login = async (values, { setSubmitting }) => {
+  const navigate = useNavigate();
+
+  const login = async (values, { setSubmitting, setStatus }) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      setStatus(null);
+
+      const response = await authService.login({
+        username: values.username,
+        password: values.password,
+      });
+
+      console.log(response);
+
+      // TODO:
+      // localStorage.setItem("accessToken", response.data.accessToken);
+      // setUser(response.data.user);
+      //navigate("/dashboard");
+    } catch (error) {
+      console.log(error);
+      console.log(error.response);
+
+      setStatus(error.response?.data?.message ?? "Something went wrong.");
     } finally {
       setSubmitting(false);
     }
@@ -74,15 +96,20 @@ const Login = () => {
           description="Sign in to manage your API keys and chat integrations."
         />
 
-        <Formik initialValues={initialValues} onSubmit={login}>
-          {({ isSubmitting }) => (
+        <Formik
+          initialValues={initialValues}
+          validationSchema={loginSchema}
+          validateOnBlur
+          validateOnChange={false}
+          onSubmit={login}
+        >
+          {({ isSubmitting, status }) => (
             <Form className="flex flex-col gap-5">
               <Input
-                name="email"
-                label="Email"
-                type="email"
-                placeholder="you@company.com"
-                autoComplete="email"
+                name="username"
+                label="Username"
+                placeholder="johnsmith"
+                autoComplete="username"
               />
 
               <PasswordInput
@@ -90,6 +117,12 @@ const Login = () => {
                 placeholder="••••••••••"
                 autoComplete="current-password"
               />
+
+              {status && (
+                <p className="rounded-lg border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">
+                  {status}
+                </p>
+              )}
 
               <Button type="submit" loading={isSubmitting}>
                 Sign In

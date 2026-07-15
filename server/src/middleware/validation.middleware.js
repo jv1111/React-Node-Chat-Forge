@@ -38,7 +38,6 @@ const validateRegister = (req, res, next) => {
 
   req.body = {
     username,
-    email,
     password,
   };
 

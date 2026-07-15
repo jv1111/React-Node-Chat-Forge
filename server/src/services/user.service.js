@@ -8,8 +8,8 @@ const findByEmail = (email, select = "") => {
   return User.findOne({ email }).select(select);
 };
 
-const findByUsername = async (username) => {
-  return await User.findOne({ username });
+const findByUsername = async (username, select = "") => {
+  return await User.findOne({ username }).select(select);
 };
 
 const createUser = async (userData) => {
