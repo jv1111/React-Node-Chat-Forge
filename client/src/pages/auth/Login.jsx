@@ -32,10 +32,7 @@ const Login = () => {
 
       console.log(response);
 
-      // TODO:
-      // localStorage.setItem("accessToken", response.data.accessToken);
-      // setUser(response.data.user);
-      //navigate("/dashboard");
+      navigate("/dashboard");
     } catch (error) {
       console.log(error);
       console.log(error.response);

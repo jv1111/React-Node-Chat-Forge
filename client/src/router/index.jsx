@@ -1,24 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import AuthLayout from "../layouts/AuthLayout";
+import { authRoutes } from "./auth.routes";
+import { appRoutes } from "./app.routes";
 
-import Login from "../pages/auth/Login";
-import Register from "../pages/auth/Register";
-
-const router = createBrowserRouter([
-  {
-    element: <AuthLayout />,
-    children: [
-      {
-        path: "/",
-        element: <Login />,
-      },
-      {
-        path: "/register",
-        element: <Register />,
-      },
-    ],
-  },
-]);
+const router = createBrowserRouter([authRoutes, appRoutes]);
 
 export default router;
