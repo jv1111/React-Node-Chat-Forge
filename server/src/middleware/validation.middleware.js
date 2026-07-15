@@ -5,17 +5,16 @@ const {
 } = require("../utils/validator");
 
 const validateRegister = (req, res, next) => {
-  let { username, email, password } = req.body;
+  let { username, password } = req.body;
 
   username = username?.trim().toLowerCase();
-  email = email?.trim().toLowerCase();
   password = password?.trim();
 
-  // Required fields
-  if (!username || !email || !password) {
+  // Required Fields
+  if (!username || !password) {
     return res.status(400).json({
       success: false,
-      message: "All fields are required.",
+      message: "Username and password are required.",
     });
   }
 
@@ -25,14 +24,6 @@ const validateRegister = (req, res, next) => {
       success: false,
       message:
         "Username must be 3-30 characters and contain only letters, numbers, and underscores.",
-    });
-  }
-
-  // Email
-  if (!validateEmail(email)) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid email address.",
     });
   }
 
@@ -55,27 +46,20 @@ const validateRegister = (req, res, next) => {
 };
 
 const validateLogin = (req, res, next) => {
-  let { email, password } = req.body;
+  let { username, password } = req.body;
 
-  email = email?.trim().toLowerCase();
+  username = username?.trim().toLowerCase();
   password = password?.trim();
 
-  if (!email || !password) {
+  if (!username || !password) {
     return res.status(400).json({
       success: false,
-      message: "Email and password are required.",
-    });
-  }
-
-  if (!validateEmail(email)) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid email address.",
+      message: "Username and password are required.",
     });
   }
 
   req.body = {
-    email,
+    username,
     password,
   };
 

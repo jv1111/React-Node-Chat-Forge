@@ -3,13 +3,7 @@ const bcrypt = require("bcrypt");
 const userService = require("./user.service");
 const { generateAccessToken } = require("../utils/jwt");
 
-const register = async ({ username, email, password }) => {
-  const emailExists = await userService.findByEmail(email);
-
-  if (emailExists) {
-    throw new Error("Email is already registered.");
-  }
-
+const register = async ({ username, password }) => {
   const usernameExists = await userService.findByUsername(username);
 
   if (usernameExists) {
@@ -20,7 +14,6 @@ const register = async ({ username, email, password }) => {
 
   const user = await userService.createUser({
     username,
-    email,
     password: hashedPassword,
   });
 
@@ -31,10 +24,10 @@ const register = async ({ username, email, password }) => {
   };
 };
 
-const login = async ({ email, password }) => {
-  const INVALID_CREDENTIALS = "Invalid email or password.";
+const login = async ({ username, password }) => {
+  const INVALID_CREDENTIALS = "Invalid username or password.";
 
-  const user = await userService.findByEmail(email, "+password");
+  const user = await userService.findByUsername(username, "+password");
 
   if (!user) {
     throw new Error(INVALID_CREDENTIALS);
