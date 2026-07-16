@@ -7,5 +7,8 @@ const register = async (userData) => {
 const login = async (credentials) => {
   return authApi.login(credentials);
 };
+const me = async () => {
+  return authApi.me();
+};
 
-export { register, login };
+export { register, login, me };

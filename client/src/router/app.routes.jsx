@@ -1,13 +1,19 @@
+import ProtectedRoute from "./guards/ProtectedRoute";
 import AppLayout from "../layouts/AppLayout";
 
 import Dashboard from "../pages/app/Dashboard";
 
 export const appRoutes = {
-  element: <AppLayout />,
+  element: <ProtectedRoute />,
   children: [
     {
-      path: "/dashboard",
-      element: <Dashboard />,
+      element: <AppLayout />,
+      children: [
+        {
+          path: "/dashboard",
+          element: <Dashboard />,
+        },
+      ],
     },
   ],
 };

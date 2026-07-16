@@ -1,5 +1,7 @@
 import { Formik, Form } from "formik";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../features/auth/authSlice";
 
 import AuthCard from "../../components/auth/AuthCard";
 import AuthFormHeader from "../../components/auth/AuthFormHeader";
@@ -13,13 +15,21 @@ import PasswordInput from "../../components/auth/PasswordInput";
 import { loginSchema } from "../../validation";
 import * as authService from "../../services/auth.service";
 
+// temp
+import { useSelector } from "react-redux";
+
 const initialValues = {
   username: "",
   password: "",
 };
 
 const Login = () => {
+  // temp
+  const auth = useSelector((state) => state.auth);
+  console.log(auth);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const login = async (values, { setSubmitting, setStatus }) => {
     try {
@@ -31,6 +41,7 @@ const Login = () => {
       });
 
       console.log(response);
+      dispatch(setUser(response.data.user));
 
       //navigate("/dashboard");
     } catch (error) {

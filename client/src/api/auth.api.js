@@ -12,4 +12,9 @@ const login = async (data) => {
   return response.data;
 };
 
-export { register, login };
+const me = async () => {
+  const response = await api.get("/auth/me");
+  return response.data;
+};
+
+export { register, login, me };
