@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const { authenticate } = require("../middleware/auth.middleware");
-const { register, login, me } = require("../controllers/auth.controller");
+const { register, login, me, logout } = require("../controllers/auth.controller");
 
 const {
   validateRegister,
@@ -13,5 +13,6 @@ const {
 router.post("/register", validateRegister, register);
 router.post("/login", validateLogin, login);
 router.get("/me", authenticate, me);
+router.post("/logout", logout);
 
 module.exports = router;

@@ -17,4 +17,10 @@ const me = async () => {
   return response.data;
 };
 
-export { register, login, me };
+const logout = async () => {
+  const response = await api.post("/auth/logout");
+
+  return response.data;
+};
+
+export { register, login, me, logout };

@@ -11,4 +11,8 @@ const me = async () => {
   return authApi.me();
 };
 
-export { register, login, me };
+const logout = async () => {
+  return authApi.logout();
+};
+
+export { register, login, me, logout };
