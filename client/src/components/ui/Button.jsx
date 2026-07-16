@@ -1,8 +1,19 @@
 import { Icon } from "@iconify/react";
 
-const Button = ({ children, loading = false, type = "button", ...props }) => {
+const Button = ({
+  children,
+  loading = false,
+  type = "button",
+  className = "",
+  ...props
+}) => {
   return (
-    <button type={type} disabled={loading} className="btn-primary" {...props}>
+    <button
+      type={type}
+      disabled={loading}
+      className={`btn-primary ${className}`}
+      {...props}
+    >
       {loading ? (
         <>
           <Icon
