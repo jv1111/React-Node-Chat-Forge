@@ -1,11 +1,30 @@
 import ClientSelector from "../../components/playground/ClientSelector";
 import MessageBubble from "../../components/playground/MessageBubble";
 import Button from "../../components/ui/Button";
+import * as clientService from "../../services/client.service";
 
 import { sampleClients } from "../../data/sampleClients";
 import { sampleMessages } from "../../data/sampleMessages";
+import usePlaygroundProject from "../../hooks/usePlaygroundProject";
 
 const Playground = () => {
+  const { project, loading } = usePlaygroundProject();
+
+  const handleCreateClient = async () => {
+    try {
+      const response = await clientService.createClient({
+        projectCode: "prj_f71244199b3b1d9f",
+        firstName: "John",
+        middleName: "",
+        lastName: "Doe",
+      });
+
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <section className="flex h-[calc(100vh-4rem)] flex-col gap-6">
       <header>
@@ -27,7 +46,14 @@ const Playground = () => {
             description="Select the client that will send messages."
             clients={sampleClients}
             selectedClientId={1}
-            action={<Button className="w-auto">Create</Button>}
+            action={
+              <Button
+                className="w-auto px-3 py-1.5"
+                onClick={handleCreateClient}
+              >
+                Create
+              </Button>
+            }
           />
 
           {/* Recipient */}

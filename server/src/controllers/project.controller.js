@@ -19,6 +19,28 @@ const createProject = async (req, res) => {
   }
 };
 
+const getProjectByName = async (req, res) => {
+  try {
+    const { name } = req.params;
+
+    const project = await projectService.findByDeveloperAndName(
+      req.user.id,
+      name,
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: project,
+    });
+  } catch (error) {
+    return res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createProject,
+  getProjectByName,
 };

@@ -41,8 +41,22 @@ const findByProjectCode = async (projectCode) => {
   return project;
 };
 
+const findByDeveloperAndName = async (developerId, name) => {
+  const project = await Project.findOne({
+    developer: developerId,
+    name,
+  });
+
+  if (!project) {
+    throw new Error("Project not found.");
+  }
+
+  return project;
+};
+
 module.exports = {
   generateProjectCode,
   createProject,
   findByProjectCode,
+  findByDeveloperAndName,
 };
