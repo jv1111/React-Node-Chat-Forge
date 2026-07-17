@@ -2,10 +2,27 @@ const projectService = require("./project.service");
 const Client = require("../models/client.model");
 const { capitalize } = require("../utils/format");
 
-const DEFAULT_CLIENTS = ["Client 1", "Client 2", "Client 3"];
+const DEFAULT_CLIENTS = [
+  {
+    username: "client1",
+    firstName: "Client",
+    lastName: "1",
+  },
+  {
+    username: "client2",
+    firstName: "Client",
+    lastName: "2",
+  },
+  {
+    username: "client3",
+    firstName: "Client",
+    lastName: "3",
+  },
+];
 
 const createClient = async ({
   projectCode,
+  username,
   firstName,
   middleName = "",
   lastName,
@@ -14,21 +31,22 @@ const createClient = async ({
   // Example:
   //   "jOHn"        -> "John"
   const normalizedClient = {
+    username: username.trim().toLowerCase(),
     firstName: capitalize(firstName),
     middleName: capitalize(middleName),
     lastName: capitalize(lastName),
   };
 
-  const project = await projectService.findByProjectCode(projectCode);
-
-  const existingClient = await Client.findOne({
+  const existingUsername = await Client.findOne({
     project: project._id,
-    ...normalizedClient,
+    username: normalizedClient.username,
   });
 
-  if (existingClient) {
-    throw new Error("Client already exists.");
+  if (existingUsername) {
+    throw new Error("Username is already taken.");
   }
+
+  const project = await projectService.findByProjectCode(projectCode);
 
   return await Client.create({
     project: project._id,
@@ -50,16 +68,13 @@ const findById = async (projectId, clientId) => {
 };
 
 const createDefaultClients = async (projectId) => {
-  const clients = DEFAULT_CLIENTS.map((name) => {
-    const [firstName, lastName] = name.split(" ");
-
-    return {
-      project: projectId,
-      firstName,
-      middleName: "",
-      lastName,
-    };
-  });
+  const clients = DEFAULT_CLIENTS.map((client) => ({
+    project: projectId,
+    username: client.username,
+    firstName: client.firstName,
+    middleName: "",
+    lastName: client.lastName,
+  }));
 
   return Client.insertMany(clients);
 };

@@ -9,6 +9,12 @@ const clientSchema = new mongoose.Schema(
       index: true,
     },
 
+    username: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     firstName: {
       type: String,
       required: true,
@@ -35,13 +41,11 @@ const clientSchema = new mongoose.Schema(
   },
 );
 
-// Prevent duplicate client names within the same project
+// Prevent duplicate client username within the same project
 clientSchema.index(
   {
     project: 1,
-    firstName: 1,
-    middleName: 1,
-    lastName: 1,
+    username: 1,
   },
   { unique: true },
 );
