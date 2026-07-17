@@ -6,9 +6,11 @@ import * as clientService from "../../services/client.service";
 import { sampleClients } from "../../data/sampleClients";
 import { sampleMessages } from "../../data/sampleMessages";
 import usePlaygroundProject from "../../hooks/usePlaygroundProject";
+import useClients from "../../hooks/useClients";
 
 const Playground = () => {
   const { project, loading } = usePlaygroundProject();
+  const { clients, refreshClients } = useClients(project?.projectCode);
 
   const handleCreateClient = async () => {
     try {
@@ -19,7 +21,7 @@ const Playground = () => {
         lastName: "Doe",
       });
 
-      console.log(response);
+      await refreshClients();
     } catch (error) {
       console.error(error);
     }
@@ -44,7 +46,7 @@ const Playground = () => {
           <ClientSelector
             title="Login Client"
             description="Select the client that will send messages."
-            clients={sampleClients}
+            clients={clients}
             selectedClientId={1}
             action={
               <Button
@@ -60,7 +62,7 @@ const Playground = () => {
           <ClientSelector
             title="Chat Recipient"
             description="Select who receives the messages."
-            clients={sampleClients}
+            clients={clients}
             selectedClientId={2}
           />
         </aside>

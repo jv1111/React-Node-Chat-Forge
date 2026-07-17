@@ -21,9 +21,9 @@ const ClientSelector = ({
       <div className="mt-5 space-y-3">
         {clients.map((client) => (
           <ClientCard
-            key={client.id}
+            key={client._id}
             client={client}
-            selected={client.id === selectedClientId}
+            selected={client._id === selectedClientId}
             onClick={() => onSelect?.(client)}
           />
         ))}

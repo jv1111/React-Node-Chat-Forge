@@ -1,4 +1,13 @@
 const ClientCard = ({ client, selected = false, onClick }) => {
+  const fullName = [client.firstName, client.middleName, client.lastName]
+    .filter(Boolean)
+    .join(" ");
+
+  const initials = fullName
+    .split(" ")
+    .map((word) => word[0])
+    .join("");
+
   return (
     <button
       onClick={onClick}
@@ -8,19 +17,12 @@ const ClientCard = ({ client, selected = false, onClick }) => {
           : "border-white/10 bg-white/5 hover:bg-white/10"
       }`}
     >
-      <div
-        className={`flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white ${client.color}`}
-      >
-        {client.name
-          .split(" ")
-          .map((word) => word[0])
-          .join("")}
+      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+        {initials}
       </div>
 
       <div>
-        <p className="font-medium text-white">{client.name}</p>
-
-        <p className="text-sm text-white/40">{client.username}</p>
+        <p className="font-medium text-white">{fullName}</p>
       </div>
     </button>
   );

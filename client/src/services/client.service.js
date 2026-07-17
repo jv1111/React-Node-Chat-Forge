@@ -4,4 +4,8 @@ const createClient = async (clientData) => {
   return clientApi.createClient(clientData);
 };
 
-export { createClient };
+const getClients = async (projectCode) => {
+  return clientApi.getClients(projectCode);
+};
+
+export { createClient, getClients };

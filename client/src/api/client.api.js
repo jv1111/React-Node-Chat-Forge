@@ -6,4 +6,14 @@ const createClient = async (data) => {
   return response.data;
 };
 
-export { createClient };
+const getClients = async (projectCode) => {
+  const response = await api.get("/clients", {
+    params: {
+      projectCode,
+    },
+  });
+
+  return response.data;
+};
+
+export { createClient, getClients };
