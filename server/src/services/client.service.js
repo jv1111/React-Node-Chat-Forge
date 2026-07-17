@@ -2,6 +2,8 @@ const projectService = require("./project.service");
 const Client = require("../models/client.model");
 const { capitalize } = require("../utils/format");
 
+const DEFAULT_CLIENTS = ["Client 1", "Client 2", "Client 3"];
+
 const createClient = async ({
   projectCode,
   firstName,
@@ -47,7 +49,23 @@ const findById = async (projectId, clientId) => {
   return client;
 };
 
+const createDefaultClients = async (projectId) => {
+  const clients = DEFAULT_CLIENTS.map((name) => {
+    const [firstName, lastName] = name.split(" ");
+
+    return {
+      project: projectId,
+      firstName,
+      middleName: "",
+      lastName,
+    };
+  });
+
+  return Client.insertMany(clients);
+};
+
 module.exports = {
   createClient,
+  createDefaultClients,
   findById,
 };

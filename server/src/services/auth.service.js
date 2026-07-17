@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const projectService = require("./project.service");
+const clientService = require("./client.service");
 
 const userService = require("./user.service");
 const { generateAccessToken } = require("../utils/jwt");
@@ -18,7 +19,9 @@ const register = async ({ username, password }) => {
     password: hashedPassword,
   });
 
-  await projectService.createProject(user.id, "Playground");
+  const project = await projectService.createProject(user.id, "Playground");
+
+  await clientService.createDefaultClients(project._id);
 
   return {
     id: user.id,
