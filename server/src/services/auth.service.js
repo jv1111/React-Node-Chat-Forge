@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const { hashPassword, comparePassword } = require("../utils/hash");
 const projectService = require("./project.service");
 const clientService = require("./client.service");
 
@@ -12,7 +12,7 @@ const register = async ({ username, password }) => {
     throw new Error("Username is already taken.");
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword = await hashPassword(password);
 
   const user = await userService.createUser({
     username,
@@ -47,13 +47,16 @@ const login = async ({ username, password }) => {
     throw new Error(INVALID_CREDENTIALS);
   }
 
-  const validPassword = await bcrypt.compare(password, user.password);
+  const validPassword = await comparePassword(password, user.password);
 
   if (!validPassword) {
     throw new Error(INVALID_CREDENTIALS);
   }
 
-  const accessToken = generateAccessToken(user);
+  const accessToken = generateAccessToken({
+    type: "developer",
+    id: user.id,
+  });
 
   return {
     user: {

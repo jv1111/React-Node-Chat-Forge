@@ -1,3 +1,5 @@
+const { hashPassword } = require("../utils/hash");
+
 const projectService = require("./project.service");
 const Client = require("../models/client.model");
 const { capitalize } = require("../utils/format");
@@ -5,16 +7,19 @@ const { capitalize } = require("../utils/format");
 const DEFAULT_CLIENTS = [
   {
     username: "client1",
+    password: "playground",
     firstName: "Client",
     lastName: "1",
   },
   {
     username: "client2",
+    password: "playground",
     firstName: "Client",
     lastName: "2",
   },
   {
     username: "client3",
+    password: "playground",
     firstName: "Client",
     lastName: "3",
   },
@@ -23,6 +28,7 @@ const DEFAULT_CLIENTS = [
 const createClient = async ({
   projectCode,
   username,
+  password,
   firstName,
   middleName = "",
   lastName,
@@ -37,6 +43,8 @@ const createClient = async ({
     lastName: capitalize(lastName),
   };
 
+  const project = await projectService.findByProjectCode(projectCode);
+
   const existingUsername = await Client.findOne({
     project: project._id,
     username: normalizedClient.username,
@@ -46,11 +54,15 @@ const createClient = async ({
     throw new Error("Username is already taken.");
   }
 
-  const project = await projectService.findByProjectCode(projectCode);
+  const hashedPassword = await hashPassword(password);
 
-  return await Client.create({
+  return Client.create({
     project: project._id,
-    ...normalizedClient,
+    username: normalizedClient.username,
+    password: hashedPassword,
+    firstName: normalizedClient.firstName,
+    middleName: normalizedClient.middleName,
+    lastName: normalizedClient.lastName,
   });
 };
 
@@ -68,13 +80,16 @@ const findById = async (projectId, clientId) => {
 };
 
 const createDefaultClients = async (projectId) => {
-  const clients = DEFAULT_CLIENTS.map((client) => ({
-    project: projectId,
-    username: client.username,
-    firstName: client.firstName,
-    middleName: "",
-    lastName: client.lastName,
-  }));
+  const clients = await Promise.all(
+    DEFAULT_CLIENTS.map(async (client) => ({
+      project: projectId,
+      username: client.username,
+      password: await hashPassword(client.password),
+      firstName: client.firstName,
+      middleName: "",
+      lastName: client.lastName,
+    })),
+  );
 
   return Client.insertMany(clients);
 };

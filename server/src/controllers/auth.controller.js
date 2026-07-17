@@ -29,12 +29,18 @@ const login = async (req, res) => {
       maxAge: Number(process.env.COOKIE_MAX_AGE), // 15 minutes
     });
 
+    const data = {
+      user,
+    };
+
+    if (process.env.NODE_ENV === "development") {
+      data.accessToken = accessToken;
+    }
+
     return res.status(200).json({
       success: true,
       message: "Login successful.",
-      data: {
-        user,
-      },
+      data,
     });
   } catch (error) {
     return res.status(401).json({

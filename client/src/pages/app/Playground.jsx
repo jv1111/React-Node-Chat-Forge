@@ -8,6 +8,7 @@ import { sampleMessages } from "../../data/sampleMessages";
 import usePlaygroundProject from "../../hooks/usePlaygroundProject";
 import useClients from "../../hooks/useClients";
 
+// need to know which client is logged in, update find all clients except 1, ask for industry standard security design.
 const Playground = () => {
   const { project, loading } = usePlaygroundProject();
   const { clients, refreshClients } = useClients(project?.projectCode);
