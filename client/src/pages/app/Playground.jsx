@@ -1,7 +1,9 @@
+import { useState } from "react";
 import ClientSelector from "../../components/playground/ClientSelector";
 import MessageBubble from "../../components/playground/MessageBubble";
 import Button from "../../components/ui/Button";
 import * as clientService from "../../services/client.service";
+import * as clientAuthService from "../../services/clientAuth.service";
 
 import { sampleClients } from "../../data/sampleClients";
 import { sampleMessages } from "../../data/sampleMessages";
@@ -10,6 +12,9 @@ import useClients from "../../hooks/useClients";
 
 // need to know which client is logged in, update find all clients except 1, ask for industry standard security design.
 const Playground = () => {
+  // check if redux is good for this or its ok not to
+  const [clientAuth, setClientAuth] = useState(null);
+
   const { project, loading } = usePlaygroundProject();
   const { clients, refreshClients } = useClients(project?.projectCode);
 
@@ -23,6 +28,25 @@ const Playground = () => {
       });
 
       await refreshClients();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleLoginClient = async (client) => {
+    if (!project) return;
+
+    try {
+      const response = await clientAuthService.login({
+        projectCode: project.projectCode,
+        username: client.username,
+        password: "playground",
+      });
+
+      console.log("Client Login");
+      console.log(response);
+
+      setClientAuth(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -48,7 +72,8 @@ const Playground = () => {
             title="Login Client"
             description="Select the client that will send messages."
             clients={clients}
-            selectedClientId={1}
+            selectedClientId={clientAuth?.client.id}
+            onSelect={handleLoginClient}
             action={
               <Button
                 className="w-auto px-3 py-1.5"

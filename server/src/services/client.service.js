@@ -126,9 +126,49 @@ const getClients = async ({ projectCode, page = 1, limit = 20 }) => {
   };
 };
 
+const getAvailableClients = async ({
+  projectId,
+  clientId,
+  page = 1,
+  limit = 20,
+}) => {
+  const safeLimit = Math.min(Math.max(limit, 1), 100);
+
+  const skip = (page - 1) * safeLimit;
+
+  const filter = {
+    project: projectId,
+    _id: { $ne: clientId },
+  };
+
+  const [clients, total] = await Promise.all([
+    Client.find(filter)
+      .select("-password")
+      .sort({ createdAt: 1 })
+      .skip(skip)
+      .limit(safeLimit)
+      .lean(),
+
+    Client.countDocuments(filter),
+  ]);
+
+  return {
+    clients,
+    pagination: {
+      page,
+      limit: safeLimit,
+      total,
+      totalPages: Math.ceil(total / safeLimit),
+      hasNextPage: page * safeLimit < total,
+      hasPreviousPage: page > 1,
+    },
+  };
+};
+
 module.exports = {
   createClient,
   createDefaultClients,
   findById,
   getClients,
+  getAvailableClients,
 };

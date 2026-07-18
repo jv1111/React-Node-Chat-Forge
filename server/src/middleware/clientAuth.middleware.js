@@ -1,4 +1,5 @@
 const { validateUsername } = require("../utils/validator");
+const { verifyAccessToken } = require("../utils/jwt");
 
 const validateClientLogin = (req, res, next) => {
   let { projectCode, username, password } = req.body;
@@ -31,6 +32,38 @@ const validateClientLogin = (req, res, next) => {
   next();
 };
 
+const authenticateClient = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Authentication required.",
+    });
+  }
+
+  try {
+    const { id, projectId, type } = verifyAccessToken(token);
+
+    if (type !== "client") {
+      throw new Error();
+    }
+
+    req.client = {
+      id,
+      projectId,
+    };
+
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token.",
+    });
+  }
+};
+
 module.exports = {
   validateClientLogin,
+  authenticateClient,
 };

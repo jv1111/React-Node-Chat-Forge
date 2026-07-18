@@ -6,7 +6,7 @@ const testRoutes = require("./routes/test.routes");
 const authRoutes = require("./routes/auth.routes");
 const projectRoutes = require("./routes/project.routes");
 const clientRoutes = require("./routes/client.routes");
-const clientAuthRoutes = require("./routes/clientAuth.routes"); //TODO clean this up the creation is in the client put it here
+const clientAuthRoutes = require("./routes/clientAuth.routes"); //TODO Move the creation logic here from the client.
 const messageRoutes = require("./routes/message.routes");
 const conversationRoutes = require("./routes/conversation.routes");
 

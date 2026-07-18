@@ -1,5 +1,6 @@
 import { api } from "./axios";
 
+// todo put this in client auth
 const createClient = async (data) => {
   const response = await api.post("/clients", data);
 
