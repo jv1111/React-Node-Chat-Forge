@@ -10,10 +10,11 @@ import { sampleMessages } from "../../data/sampleMessages";
 import usePlaygroundProject from "../../hooks/usePlaygroundProject";
 import useClients from "../../hooks/useClients";
 
-// need to know which client is logged in, update find all clients except 1, ask for industry standard security design.
 const Playground = () => {
-  // check if redux is good for this or its ok not to
+  //TODO check if redux is good for this or its ok not to
   const [clientAuth, setClientAuth] = useState(null);
+  const [availableClients, setAvailableClients] = useState([]);
+  const [selectedRecipient, setSelectedRecipient] = useState(null);
 
   const { project, loading } = usePlaygroundProject();
   const { clients, refreshClients } = useClients(project?.projectCode);
@@ -43,10 +44,16 @@ const Playground = () => {
         password: "playground",
       });
 
-      console.log("Client Login");
-      console.log(response);
-
       setClientAuth(response.data);
+
+      const available = await clientService.getAvailableClients(
+        response.data.accessToken,
+      );
+
+      setAvailableClients(available.data.clients);
+
+      // Auto-select the first available recipient
+      setSelectedRecipient(available.data.clients[0]?._id ?? null);
     } catch (error) {
       console.error(error);
     }
@@ -88,8 +95,9 @@ const Playground = () => {
           <ClientSelector
             title="Chat Recipient"
             description="Select who receives the messages."
-            clients={clients}
-            selectedClientId={2}
+            clients={availableClients}
+            selectedClientId={selectedRecipient}
+            onSelect={(client) => setSelectedRecipient(client._id)}
           />
         </aside>
 

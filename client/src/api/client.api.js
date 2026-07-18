@@ -17,4 +17,14 @@ const getClients = async (projectCode) => {
   return response.data;
 };
 
-export { createClient, getClients };
+const getAvailableClients = async (accessToken) => {
+  const response = await api.get("/clients/available", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return response.data;
+};
+
+export { createClient, getClients, getAvailableClients };

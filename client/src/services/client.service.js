@@ -8,4 +8,8 @@ const getClients = async (projectCode) => {
   return clientApi.getClients(projectCode);
 };
 
-export { createClient, getClients };
+const getAvailableClients = async (accessToken) => {
+  return clientApi.getAvailableClients(accessToken);
+};
+
+export { createClient, getClients, getAvailableClients };
