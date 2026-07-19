@@ -32,43 +32,43 @@ const validateClientLogin = (req, res, next) => {
   next();
 };
 
-const authenticateClient = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const authenticateClient = (req, res, next) => {
+    const token = req.headers.authorization?.split(" ")[1];
 
-  console.log("\n==================================================");
-  console.log("          CLIENT AUTH MIDDLEWARE");
-  console.log("==================================================");
-  console.log("Authorization Header:", req.headers.authorization);
-  console.log("Extracted Token:     ", token);
-  console.log("==================================================\n");
+    console.log("\n==================================================");
+    console.log("          CLIENT AUTH MIDDLEWARE");
+    console.log("==================================================");
+    console.log("Authorization Header:", req.headers.authorization);
+    console.log("Extracted Token:     ", token);
+    console.log("==================================================\n");
 
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: "Authentication required.",
-    });
-  }
-
-  try {
-    const { id, projectId, type } = verifyAccessToken(token);
-
-    if (type !== "client") {
-      throw new Error();
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required.",
+      });
     }
 
-    req.client = {
-      id,
-      projectId,
-    };
+    try {
+      const { id, projectId, type } = verifyAccessToken(token);
 
-    next();
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token.",
-    });
-  }
-};
+      if (type !== "client") {
+        throw new Error();
+      }
+
+      req.client = {
+        id,
+        projectId,
+      };
+
+      next();
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired token.",
+      });
+    }
+  };
 
 module.exports = {
   validateClientLogin,

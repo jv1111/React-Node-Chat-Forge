@@ -1,7 +1,7 @@
 import * as messageApi from "../api/message.api";
 
-const sendMessage = async (messageData) => {
-  return messageApi.sendMessage(messageData);
+const sendMessage = async (messageData, accessToken) => {
+  return messageApi.sendMessage(messageData, accessToken);
 };
 
 const getConversationMessages = async (conversationId) => {

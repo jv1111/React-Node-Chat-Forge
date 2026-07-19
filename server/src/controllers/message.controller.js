@@ -2,7 +2,12 @@ const messageService = require("../services/message.service");
 
 const sendMessage = async (req, res) => {
   try {
-    const message = await messageService.sendMessage(req.body);
+    const { projectId, id: fromClientId } = req.client;
+    const message = await messageService.sendMessage({
+      ...req.body,
+      projectId,
+      fromClientId,
+    });
 
     return res.status(201).json({
       success: true,

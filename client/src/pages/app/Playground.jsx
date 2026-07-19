@@ -5,9 +5,8 @@ import Button from "../../components/ui/Button";
 import * as clientService from "../../services/client.service";
 import * as clientAuthService from "../../services/clientAuth.service";
 import * as conversationService from "../../services/conversation.service";
+import * as messageService from "../../services/message.service";
 
-import { sampleClients } from "../../data/sampleClients";
-import { sampleMessages } from "../../data/sampleMessages";
 import usePlaygroundProject from "../../hooks/usePlaygroundProject";
 import useClients from "../../hooks/useClients";
 
@@ -91,6 +90,7 @@ const Playground = () => {
             response.data._id,
             clientAuth.accessToken,
           );
+        console.log("get conversation messsage ", messagesResponse);
         setMessages(messagesResponse.data);
       } else {
         // No conversation yet
@@ -101,18 +101,33 @@ const Playground = () => {
     }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!messageInput.trim()) return;
+    if (!clientAuth || !selectedRecipient) return;
 
-    const tempMessage = {
-      _id: Date.now().toString(),
-      sender: clientAuth.client,
-      content: messageInput,
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      const response = await messageService.sendMessage(
+        {
+          toClientId: selectedRecipient,
+          content: messageInput,
+        },
+        clientAuth.accessToken,
+      );
 
-    setMessages((prev) => [...prev, tempMessage]);
-    setMessageInput("");
+      setConversation(response.data.conversation);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          ...response.data.message,
+          sender: clientAuth.client,
+        },
+      ]);
+
+      setMessageInput("");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

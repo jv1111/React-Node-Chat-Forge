@@ -1,7 +1,11 @@
 import { api } from "./axios";
 
-const sendMessage = async (data) => {
-  const response = await api.post("/messages", data);
+const sendMessage = async (messageData, accessToken) => {
+  const response = await api.post("/messages", messageData, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
   return response.data;
 };
