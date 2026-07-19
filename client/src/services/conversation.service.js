@@ -8,4 +8,8 @@ const getConversation = async (participants, accessToken) => {
   return conversationApi.getConversation(participants, accessToken);
 };
 
-export { getClientConversations, getConversation };
+const getConversationMessages = async (conversationId, accessToken) => {
+  return conversationApi.getConversationMessages(conversationId, accessToken);
+};
+
+export { getClientConversations, getConversation, getConversationMessages };

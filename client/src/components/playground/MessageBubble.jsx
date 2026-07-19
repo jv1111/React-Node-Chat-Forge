@@ -1,4 +1,9 @@
 const MessageBubble = ({ message }) => {
+  const senderName =
+    typeof message.sender === "string"
+      ? message.sender
+      : `${message.sender.firstName} ${message.sender.lastName}`;
+
   return (
     <div className={`flex ${message.own ? "justify-end" : "justify-start"}`}>
       <div
@@ -13,10 +18,10 @@ const MessageBubble = ({ message }) => {
             message.own ? "text-white/70" : "text-white/40"
           }`}
         >
-          {message.sender}
+          {senderName}
         </p>
 
-        <p>{message.message}</p>
+        <p>{message.content ?? message.message}</p>
       </div>
     </div>
   );

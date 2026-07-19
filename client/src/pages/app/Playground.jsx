@@ -17,6 +17,10 @@ const Playground = () => {
   const [availableClients, setAvailableClients] = useState([]);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
 
+  const [conversation, setConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [messageInput, setMessageInput] = useState("");
+
   const { project, loading } = usePlaygroundProject();
   const { clients, refreshClients } = useClients(project?.projectCode);
 
@@ -75,11 +79,36 @@ const Playground = () => {
         clientAuth.accessToken,
       );
 
-      // TODO:
-      // setConversation(response.data);
+      setConversation(response.data);
+
+      if (response.data) {
+        // Existing conversation
+        const messagesResponse = await conversationService.getConversationMessages(
+          response.data._id,
+          clientAuth.accessToken,
+        );
+        setMessages(messagesResponse.data);
+      } else {
+        // No conversation yet
+        setMessages([]);
+      }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleSendMessage = () => {
+    if (!messageInput.trim()) return;
+
+    const tempMessage = {
+      _id: Date.now().toString(),
+      sender: clientAuth.client,
+      content: messageInput,
+      createdAt: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, tempMessage]);
+    setMessageInput("");
   };
 
   return (
@@ -151,7 +180,7 @@ const Playground = () => {
 
           {/* Messages */}
           <div className="flex-1 space-y-6 overflow-auto px-8 py-8">
-            {sampleMessages.map((message) => (
+            {messages.map((message) => (
               <MessageBubble key={message.id} message={message} />
             ))}
           </div>
@@ -161,11 +190,18 @@ const Playground = () => {
           <div className="border-t border-white/10 p-6">
             <div className="flex gap-4">
               <input
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
                 placeholder="Type your message..."
                 className="flex-1 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-white outline-none placeholder:text-white/30 focus:border-primary/50"
               />
 
-              <Button className="btn-primary w-auto px-8">Send</Button>
+              <Button
+                className="btn-primary w-auto px-8"
+                onClick={handleSendMessage}
+              >
+                Send
+              </Button>
             </div>
           </div>
         </section>

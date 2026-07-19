@@ -26,4 +26,14 @@ const getConversation = async (participants, accessToken) => {
   return response.data;
 };
 
-export { getClientConversations, getConversation };
+const getConversationMessages = async (conversationId, accessToken) => {
+  const response = await api.get(`/messages/conversations/${conversationId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return response.data;
+};
+
+export { getClientConversations, getConversation, getConversationMessages };
