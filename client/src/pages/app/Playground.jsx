@@ -4,6 +4,7 @@ import MessageBubble from "../../components/playground/MessageBubble";
 import Button from "../../components/ui/Button";
 import * as clientService from "../../services/client.service";
 import * as clientAuthService from "../../services/clientAuth.service";
+import * as conversationService from "../../services/conversation.service";
 
 import { sampleClients } from "../../data/sampleClients";
 import { sampleMessages } from "../../data/sampleMessages";
@@ -59,6 +60,28 @@ const Playground = () => {
     }
   };
 
+  // TODO CLIENT FIND, clean up with use effect later after the message
+
+  const handleSelectRecipient = async (client) => {
+    setSelectedRecipient(client._id);
+
+    if (!clientAuth) return;
+
+    try {
+      const participants = [clientAuth.client.id, client._id];
+
+      const response = await conversationService.getConversation(
+        participants,
+        clientAuth.accessToken,
+      );
+
+      // TODO:
+      // setConversation(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <section className="flex h-[calc(100vh-4rem)] flex-col gap-6">
       <header>
@@ -97,7 +120,7 @@ const Playground = () => {
             description="Select who receives the messages."
             clients={availableClients}
             selectedClientId={selectedRecipient}
-            onSelect={(client) => setSelectedRecipient(client._id)}
+            onSelect={handleSelectRecipient}
           />
         </aside>
 

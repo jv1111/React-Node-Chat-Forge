@@ -22,6 +22,28 @@ const getClientConversations = async (req, res) => {
   }
 };
 
+const getConversation = async (req, res) => {
+  try {
+    const { participants } = req.body;
+
+    const conversation = await conversationService.getConversation(
+      req.client.projectId,
+      [req.client.id, ...participants],
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: conversation,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getClientConversations,
+  getConversation,
 };

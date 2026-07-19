@@ -30,7 +30,17 @@ const getClientConversations = async (projectCode, clientId) => {
     .sort({ updatedAt: -1 });
 };
 
+const getConversation = async (projectId, participants) => {
+  return Conversation.findOne({
+    project: projectId,
+    participants: {
+      $all: participants,
+    },
+  });
+};
+
 module.exports = {
   findOrCreateConversation,
   getClientConversations,
+  getConversation,
 };
