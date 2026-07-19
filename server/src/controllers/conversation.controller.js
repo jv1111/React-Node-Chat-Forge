@@ -26,6 +26,14 @@ const getConversation = async (req, res) => {
   try {
     const { participants } = req.body;
 
+    console.log("\n==================================================");
+    console.log("           GET CONVERSATION REQUEST");
+    console.log("==================================================");
+    console.log("Client ID:    ", req.client.id);
+    console.log("Project ID:   ", req.client.projectId);
+    console.log("Participants: ", participants);
+    console.log("==================================================\n");
+
     const conversation = await conversationService.getConversation(
       req.client.projectId,
       [req.client.id, ...participants],

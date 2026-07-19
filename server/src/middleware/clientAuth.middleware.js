@@ -35,6 +35,13 @@ const validateClientLogin = (req, res, next) => {
 const authenticateClient = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
+  console.log("\n==================================================");
+  console.log("          CLIENT AUTH MIDDLEWARE");
+  console.log("==================================================");
+  console.log("Authorization Header:", req.headers.authorization);
+  console.log("Extracted Token:     ", token);
+  console.log("==================================================\n");
+
   if (!token) {
     return res.status(401).json({
       success: false,

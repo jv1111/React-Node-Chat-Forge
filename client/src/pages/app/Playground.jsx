@@ -56,6 +56,7 @@ const Playground = () => {
       );
 
       setAvailableClients(available.data.clients);
+      console.log("login available clients: ", available.data);
 
       // Auto-select the first available recipient
       setSelectedRecipient(available.data.clients[0]?._id ?? null);
@@ -69,10 +70,12 @@ const Playground = () => {
   const handleSelectRecipient = async (client) => {
     setSelectedRecipient(client._id);
 
+    console.log("selected client ", client);
+
     if (!clientAuth) return;
 
     try {
-      const participants = [clientAuth.client.id, client._id];
+      const participants = [client._id];
 
       const response = await conversationService.getConversation(
         participants,
@@ -83,10 +86,11 @@ const Playground = () => {
 
       if (response.data) {
         // Existing conversation
-        const messagesResponse = await conversationService.getConversationMessages(
-          response.data._id,
-          clientAuth.accessToken,
-        );
+        const messagesResponse =
+          await conversationService.getConversationMessages(
+            response.data._id,
+            clientAuth.accessToken,
+          );
         setMessages(messagesResponse.data);
       } else {
         // No conversation yet
