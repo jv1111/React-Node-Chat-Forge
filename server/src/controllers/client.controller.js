@@ -53,7 +53,7 @@ const getAvailableClients = async (req, res) => {
   try {
     const result = await clientService.getAvailableClients({
       projectId: req.client.projectId,
-      clientId: req.client.id,
+      clientId: req.client._id,
     });
 
     return res.status(200).json({

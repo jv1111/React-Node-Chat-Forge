@@ -19,12 +19,12 @@ const register = async ({ username, password }) => {
     password: hashedPassword,
   });
 
-  const project = await projectService.createProject(user.id, "Playground");
+  const project = await projectService.createProject(user._id, "Playground");
 
   await clientService.createDefaultClients(project._id);
 
   return {
-    id: user.id,
+    _id: user._id,
     username: user.username,
     email: user.email,
   };
@@ -55,12 +55,12 @@ const login = async ({ username, password }) => {
 
   const accessToken = generateAccessToken({
     type: "developer",
-    id: user.id,
+    _id: user._id,
   });
 
   return {
     user: {
-      id: user.id,
+      _id: user._id,
       username: user.username,
       email: user.email,
     },

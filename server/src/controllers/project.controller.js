@@ -4,7 +4,7 @@ const createProject = async (req, res) => {
   try {
     const { name } = req.body;
 
-    const project = await projectService.createProject(req.user.id, name);
+    const project = await projectService.createProject(req.user._id, name);
 
     return res.status(201).json({
       success: true,
@@ -24,7 +24,7 @@ const getProjectByName = async (req, res) => {
     const { name } = req.params;
 
     const project = await projectService.findByDeveloperAndName(
-      req.user.id,
+      req.user._id,
       name,
     );
 

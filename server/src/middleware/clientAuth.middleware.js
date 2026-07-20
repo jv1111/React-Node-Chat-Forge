@@ -50,14 +50,14 @@ const validateClientLogin = (req, res, next) => {
     }
 
     try {
-      const { id, projectId, type } = verifyAccessToken(token);
+      const { _id, projectId, type } = verifyAccessToken(token);
 
       if (type !== "client") {
         throw new Error();
       }
 
       req.client = {
-        id,
+        _id,
         projectId,
       };
 

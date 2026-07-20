@@ -55,7 +55,6 @@ const Playground = () => {
       );
 
       setAvailableClients(available.data.clients);
-      console.log("login available clients: ", available.data);
 
       // Auto-select the first available recipient
       setSelectedRecipient(available.data.clients[0]?._id ?? null);
@@ -68,8 +67,6 @@ const Playground = () => {
 
   const handleSelectRecipient = async (client) => {
     setSelectedRecipient(client._id);
-
-    console.log("selected client ", client);
 
     if (!clientAuth) return;
 
@@ -90,7 +87,6 @@ const Playground = () => {
             response.data._id,
             clientAuth.accessToken,
           );
-        console.log("get conversation messsage ", messagesResponse);
         setMessages(messagesResponse.data);
       } else {
         // No conversation yet
@@ -150,7 +146,7 @@ const Playground = () => {
             title="Login Client"
             description="Select the client that will send messages."
             clients={clients}
-            selectedClientId={clientAuth?.client.id}
+            selectedClientId={clientAuth?.client._id}
             onSelect={handleLoginClient}
             action={
               <Button
@@ -199,9 +195,23 @@ const Playground = () => {
 
           {/* Messages */}
           <div className="flex-1 space-y-6 overflow-auto px-8 py-8">
-            {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
-            ))}
+            {messages.map((message) => {
+              console.log("===============================");
+              console.log("Message: ", message);
+              console.log("client: ", clientAuth);
+              console.log("Message id: ", message.sender._id);
+              console.log("client id: ", clientAuth.client._id);
+              console.log("===============================");
+              return (
+                <MessageBubble
+                  key={message._id}
+                  senderName={`${message.sender.firstName} ${message.sender.lastName}`}
+                  message={message.content}
+                  senderId={message.sender._id}
+                  clientId={clientAuth.client._id}
+                />
+              );
+            })}
           </div>
 
           {/* Input */}

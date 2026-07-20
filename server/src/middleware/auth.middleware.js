@@ -15,9 +15,9 @@ const authenticate = (req, res, next) => {
   }
 
   try {
-    const { id } = verifyAccessToken(token);
+    const { _id } = verifyAccessToken(token);
 
-    req.user = { id };
+    req.user = { _id };
 
     next();
   } catch (error) {

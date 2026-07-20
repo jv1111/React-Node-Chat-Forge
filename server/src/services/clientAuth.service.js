@@ -27,20 +27,20 @@ const login = async ({ projectCode, username, password }) => {
 
   const accessToken = generateAccessToken({
     type: "client",
-    id: client.id,
-    projectId: project.id,
+    _id: client._id,
+    projectId: project._id,
   });
 
   console.log("\n==================================================");
   console.log("           CLIENT LOGIN TOKEN");
   console.log("==================================================");
-  console.log("Client ID:  ", client.id);
-  console.log("Project ID: ", project.id);
+  console.log("Client ID:  ", client._id);
+  console.log("Project ID: ", project._id);
   console.log("==================================================\n");
 
   return {
     client: {
-      id: client.id,
+      _id: client._id,
       username: client.username,
       firstName: client.firstName,
       middleName: client.middleName,

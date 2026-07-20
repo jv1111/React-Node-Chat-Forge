@@ -52,7 +52,7 @@ const login = async (req, res) => {
 
 const me = async (req, res) => {
   try {
-    const user = await userService.getCurrentUser(req.user.id);
+    const user = await userService.getCurrentUser(req.user._id);
 
     if (!user) {
       return res.status(404).json({
