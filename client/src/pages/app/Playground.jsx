@@ -1,124 +1,45 @@
 import { useState } from "react";
 import ClientSelector from "../../components/playground/ClientSelector";
 import MessageBubble from "../../components/playground/MessageBubble";
+import ConversationHeader from "../../components/playground/ConversationHeader";
+import MessageInput from "../../components/playground/MessageInput";
 import Button from "../../components/ui/Button";
-import * as clientService from "../../services/client.service";
-import * as clientAuthService from "../../services/clientAuth.service";
-import * as conversationService from "../../services/conversation.service";
-import * as messageService from "../../services/message.service";
 
 import usePlaygroundProject from "../../hooks/usePlaygroundProject";
+import usePlaygroundAuth from "../../hooks/usePlaygroundAuth";
 import useClients from "../../hooks/useClients";
+import useConversation from "../../hooks/useConversation";
 
 const Playground = () => {
-  //TODO check if redux is good for this or its ok not to
-  const [clientAuth, setClientAuth] = useState(null);
-  const [availableClients, setAvailableClients] = useState([]);
-  const [selectedRecipient, setSelectedRecipient] = useState(null);
-
-  const [conversation, setConversation] = useState(null);
-  const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
 
-  const { project, loading } = usePlaygroundProject();
+  const { project } = usePlaygroundProject();
+  const {
+    clientAuth,
+    availableClients,
+    selectedRecipient,
+    setSelectedRecipient,
+    loginClient,
+  } = usePlaygroundAuth(project);
   const { clients, refreshClients } = useClients(project?.projectCode);
+  const { messages, sendMessage } = useConversation(
+    clientAuth,
+    selectedRecipient,
+  );
 
-  const handleCreateClient = async () => {
-    try {
-      const response = await clientService.createClient({
-        projectCode: "prj_f71244199b3b1d9f",
-        firstName: "John",
-        middleName: "",
-        lastName: "Doe",
-      });
+  const recipient = availableClients.find(
+    (client) => client._id === selectedRecipient,
+  );
 
-      await refreshClients();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleLoginClient = async (client) => {
-    if (!project) return;
-
-    try {
-      const response = await clientAuthService.login({
-        projectCode: project.projectCode,
-        username: client.username,
-        password: "playground",
-      });
-
-      setClientAuth(response.data);
-
-      const available = await clientService.getAvailableClients(
-        response.data.accessToken,
-      );
-
-      setAvailableClients(available.data.clients);
-
-      // Auto-select the first available recipient
-      setSelectedRecipient(available.data.clients[0]?._id ?? null);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // TODO CLIENT FIND, clean up with use effect later after the message
-
-  const handleSelectRecipient = async (client) => {
+  const handleSelectRecipient = (client) => {
     setSelectedRecipient(client._id);
-
-    if (!clientAuth) return;
-
-    try {
-      const participants = [client._id];
-
-      const response = await conversationService.getConversation(
-        participants,
-        clientAuth.accessToken,
-      );
-
-      setConversation(response.data);
-
-      if (response.data) {
-        // Existing conversation
-        const messagesResponse =
-          await conversationService.getConversationMessages(
-            response.data._id,
-            clientAuth.accessToken,
-          );
-        setMessages(messagesResponse.data);
-      } else {
-        // No conversation yet
-        setMessages([]);
-      }
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const handleSendMessage = async () => {
     if (!messageInput.trim()) return;
-    if (!clientAuth || !selectedRecipient) return;
 
     try {
-      const response = await messageService.sendMessage(
-        {
-          toClientId: selectedRecipient,
-          content: messageInput,
-        },
-        clientAuth.accessToken,
-      );
-
-      setConversation(response.data.conversation);
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          ...response.data.message,
-          sender: clientAuth.client,
-        },
-      ]);
+      await sendMessage(messageInput);
 
       setMessageInput("");
     } catch (error) {
@@ -147,15 +68,8 @@ const Playground = () => {
             description="Select the client that will send messages."
             clients={clients}
             selectedClientId={clientAuth?.client._id}
-            onSelect={handleLoginClient}
-            action={
-              <Button
-                className="w-auto px-3 py-1.5"
-                onClick={handleCreateClient}
-              >
-                Create
-              </Button>
-            }
+            onSelect={loginClient}
+            action={<Button className="w-auto px-3 py-1.5">Create</Button>}
           />
 
           {/* Recipient */}
@@ -169,70 +83,31 @@ const Playground = () => {
         </aside>
 
         {/* CHAT */}
-
         <section className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
-          {/* Header */}
+          <ConversationHeader
+            client={clientAuth?.client}
+            recipient={recipient}
+          />
 
-          <div className="border-b border-white/10 px-8 py-6">
-            <h2 className="text-xl font-semibold text-white">Conversation</h2>
-
-            <div className="mt-4 flex items-center gap-8 text-sm">
-              <div>
-                <p className="text-white/40">Logged in as</p>
-
-                <p className="mt-1 font-medium text-white">🟢 Alice Johnson</p>
-              </div>
-
-              <div className="text-white/30">→</div>
-
-              <div>
-                <p className="text-white/40">Talking to</p>
-
-                <p className="mt-1 font-medium text-white">🔵 Bob Smith</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Messages */}
+          {/* Message */}
           <div className="flex-1 space-y-6 overflow-auto px-8 py-8">
-            {messages.map((message) => {
-              console.log("===============================");
-              console.log("Message: ", message);
-              console.log("client: ", clientAuth);
-              console.log("Message id: ", message.sender._id);
-              console.log("client id: ", clientAuth.client._id);
-              console.log("===============================");
-              return (
-                <MessageBubble
-                  key={message._id}
-                  senderName={`${message.sender.firstName} ${message.sender.lastName}`}
-                  message={message.content}
-                  senderId={message.sender._id}
-                  clientId={clientAuth.client._id}
-                />
-              );
-            })}
+            {messages.map((message) => (
+              <MessageBubble
+                key={message._id}
+                senderName={`${message.sender.firstName} ${message.sender.lastName}`}
+                message={message.content}
+                senderId={message.sender._id}
+                clientId={clientAuth?.client._id}
+              />
+            ))}
           </div>
 
           {/* Input */}
-
-          <div className="border-t border-white/10 p-6">
-            <div className="flex gap-4">
-              <input
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                placeholder="Type your message..."
-                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-white outline-none placeholder:text-white/30 focus:border-primary/50"
-              />
-
-              <Button
-                className="btn-primary w-auto px-8"
-                onClick={handleSendMessage}
-              >
-                Send
-              </Button>
-            </div>
-          </div>
+          <MessageInput
+            value={messageInput}
+            onChange={setMessageInput}
+            onSend={handleSendMessage}
+          />
         </section>
       </div>
     </section>
