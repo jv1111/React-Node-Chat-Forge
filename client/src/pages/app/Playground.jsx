@@ -10,6 +10,8 @@ import usePlaygroundAuth from "../../hooks/usePlaygroundAuth";
 import useClients from "../../hooks/useClients";
 import useConversation from "../../hooks/useConversation";
 
+import { joinRoom, sendMessage } from "../../services/socket.service";
+
 const Playground = () => {
   const [messageInput, setMessageInput] = useState("");
 
