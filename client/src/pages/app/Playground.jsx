@@ -10,12 +10,11 @@ import usePlaygroundAuth from "../../hooks/usePlaygroundAuth";
 import useClients from "../../hooks/useClients";
 import useConversation from "../../hooks/useConversation";
 
-import { joinRoom, sendMessage } from "../../services/socket.service";
-
 const Playground = () => {
   const [messageInput, setMessageInput] = useState("");
 
   const { project } = usePlaygroundProject();
+  const { clients, refreshClients } = useClients(project?.projectCode);
   const {
     clientAuth,
     availableClients,
@@ -23,7 +22,6 @@ const Playground = () => {
     setSelectedRecipient,
     loginClient,
   } = usePlaygroundAuth(project);
-  const { clients, refreshClients } = useClients(project?.projectCode);
   const { messages, sendMessage } = useConversation(
     clientAuth,
     selectedRecipient,

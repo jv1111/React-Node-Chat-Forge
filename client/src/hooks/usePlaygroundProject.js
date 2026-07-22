@@ -14,8 +14,6 @@ const usePlaygroundProject = () => {
       try {
         const response = await projectService.getProject(PROJECT_NAME);
 
-        console.log("Project response:", response);
-
         setProject(response.data);
       } catch (err) {
         console.error("Failed to load Playground project:", err);

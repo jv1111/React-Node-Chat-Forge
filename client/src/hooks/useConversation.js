@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 
 import * as conversationService from "../services/conversation.service";
 import * as messageService from "../services/message.service";
+import * as socketService from "../services/socket.service";
 
 const useConversation = (clientAuth, selectedRecipient) => {
   const [conversation, setConversation] = useState(null);
@@ -11,21 +12,21 @@ const useConversation = (clientAuth, selectedRecipient) => {
     if (!clientAuth || !selectedRecipient) return;
 
     try {
-      const response = await conversationService.getConversation(
+      const conversationResponse = await conversationService.getConversation(
         [selectedRecipient],
         clientAuth.accessToken,
       );
 
-      setConversation(response.data);
+      setConversation(conversationResponse.data);
 
-      if (!response.data) {
+      if (!conversationResponse.data) {
         setMessages([]);
         return;
       }
 
       const messagesResponse =
         await conversationService.getConversationMessages(
-          response.data._id,
+          conversationResponse.data._id,
           clientAuth.accessToken,
         );
 
@@ -39,6 +40,17 @@ const useConversation = (clientAuth, selectedRecipient) => {
     loadConversation();
   }, [loadConversation]);
 
+  // sets the room
+  useEffect(() => {
+    if (!conversation) return;
+
+    socketService.joinRoom(conversation._id);
+
+    return () => {
+      socketService.leaveRoom(conversation._id);
+    };
+  }, [conversation]);
+
   const sendMessage = async (content) => {
     if (!content.trim()) return;
 
@@ -51,9 +63,8 @@ const useConversation = (clientAuth, selectedRecipient) => {
         clientAuth.accessToken,
       );
 
-      setConversation(response.data.conversation);
-
-      await loadConversation();
+      setMessages((prev) => [...prev, response.data.message]);
+      //TODO Send message successful
     } catch (error) {
       console.error(error);
     }

@@ -31,13 +31,6 @@ const login = async ({ projectCode, username, password }) => {
     projectId: project._id,
   });
 
-  console.log("\n==================================================");
-  console.log("           CLIENT LOGIN TOKEN");
-  console.log("==================================================");
-  console.log("Client ID:  ", client._id);
-  console.log("Project ID: ", project._id);
-  console.log("==================================================\n");
-
   return {
     client: {
       _id: client._id,

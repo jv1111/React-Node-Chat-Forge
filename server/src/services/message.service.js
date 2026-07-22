@@ -29,6 +29,8 @@ const sendMessage = async ({
     content,
   });
 
+  await message.populate("sender", "firstName middleName lastName");
+
   return {
     conversation,
     message,
