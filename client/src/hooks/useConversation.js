@@ -51,23 +51,30 @@ const useConversation = (clientAuth, selectedRecipient) => {
     };
   }, [conversation]);
 
-  const sendMessage = async (content) => {
+  // recieve socket message
+  useEffect(() => {
+    if (!clientAuth) return;
+
+    const handleMessage = (message) => {
+      setMessages((prev) => {
+        console.log("Last previous message:", prev[prev.length - 1]);
+        console.log("Incoming socket message:", message);
+
+        return [...prev, message];
+      });
+    };
+
+    socketService.onMessage(handleMessage);
+
+    return () => {
+      socketService.offMessage(handleMessage);
+    };
+  }, [clientAuth]);
+
+  // TODO TEST THE SEND MESSAGE
+  const sendMessage = (content) => {
     if (!content.trim()) return;
-
-    try {
-      const response = await messageService.sendMessage(
-        {
-          toClientId: selectedRecipient,
-          content,
-        },
-        clientAuth.accessToken,
-      );
-
-      setMessages((prev) => [...prev, response.data.message]);
-      //TODO Send message successful
-    } catch (error) {
-      console.error(error);
-    }
+    socketService.sendMessage(selectedRecipient, content);
   };
 
   return {

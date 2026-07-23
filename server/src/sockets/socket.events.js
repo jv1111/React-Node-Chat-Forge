@@ -1,11 +1,8 @@
 const { SOCKET_EVENTS } = require("./socket.constants");
+const messageService = require("../services/message.service");
 
 module.exports = (io, socket) => {
-  // TODO add authentication in a clean way with jwt
-
   socket.on(SOCKET_EVENTS.JOIN_ROOM, (room) => {
-    console.log(`[Socket] ${socket.id} joined room: ${room}`);
-
     socket.join(room);
   });
 
@@ -15,9 +12,25 @@ module.exports = (io, socket) => {
     socket.leave(room);
   });
 
-  socket.on(SOCKET_EVENTS.SEND_MESSAGE, ({ room, message }) => {
-    console.log(`[Socket] ${socket.id} sent message to room ${room}:`, message);
+  socket.on(SOCKET_EVENTS.SEND_MESSAGE, async ({ toClientId, content }) => {
+    try {
+      const response = await messageService.sendMessage({
+        projectId: socket.user.projectId,
+        fromClientId: socket.user._id,
+        toClientId,
+        content,
+      });
 
-    io.to(room).emit(SOCKET_EVENTS.MESSAGE, message);
+      io.to(response.conversation._id.toString()).emit(
+        SOCKET_EVENTS.MESSAGE,
+        response.message,
+      );
+    } catch (error) {
+      console.error(error);
+
+      socket.emit(SOCKET_EVENTS.ERROR, {
+        message: error.message,
+      });
+    }
   });
 };

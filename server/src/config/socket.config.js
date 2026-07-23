@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 
 const registerSocketEvents = require("../sockets");
+const socketAuth = require("../sockets/socket.auth");
 
 function createSocket(server) {
   const io = new Server(server, {
@@ -8,6 +9,8 @@ function createSocket(server) {
       origin: process.env.CLIENT_URL,
     },
   });
+
+  io.use(socketAuth);
 
   registerSocketEvents(io);
 

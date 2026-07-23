@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import * as clientAuthService from "../services/clientAuth.service";
 import * as clientService from "../services/client.service";
+import { connectSocket } from "../services/socket.client";
 
 const usePlaygroundAuth = (project) => {
   const [clientAuth, setClientAuth] = useState(null);
@@ -18,6 +19,8 @@ const usePlaygroundAuth = (project) => {
     });
 
     setClientAuth(response.data);
+
+    connectSocket(response.data.accessToken);
 
     const available = await clientService.getAvailableClients(
       response.data.accessToken,

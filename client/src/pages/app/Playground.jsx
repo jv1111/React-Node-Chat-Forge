@@ -9,6 +9,7 @@ import usePlaygroundProject from "../../hooks/usePlaygroundProject";
 import usePlaygroundAuth from "../../hooks/usePlaygroundAuth";
 import useClients from "../../hooks/useClients";
 import useConversation from "../../hooks/useConversation";
+import useAutoScroll from "../../hooks/useAutoScroll";
 
 const Playground = () => {
   const [messageInput, setMessageInput] = useState("");
@@ -26,6 +27,7 @@ const Playground = () => {
     clientAuth,
     selectedRecipient,
   );
+  const messagesContainerRef = useAutoScroll(messages);
 
   const recipient = availableClients.find(
     (client) => client._id === selectedRecipient,
@@ -90,7 +92,10 @@ const Playground = () => {
           />
 
           {/* Message */}
-          <div className="flex-1 space-y-6 overflow-auto px-8 py-8">
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 space-y-6 overflow-auto px-8 py-8"
+          >
             {messages.map((message) => (
               <MessageBubble
                 key={message._id}
