@@ -26,12 +26,28 @@ const getConversation = async (participants, accessToken) => {
   return response.data;
 };
 
-const getConversationMessages = async (conversationId, accessToken) => {
-  const response = await api.get(`/messages/conversations/${conversationId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+const getConversationMessages = async (
+  conversationId,
+  accessToken,
+  limit = 10,
+  before = null,
+) => {
+  const params = new URLSearchParams();
+
+  params.append("limit", limit);
+
+  if (before) {
+    params.append("before", before);
+  }
+
+  const response = await api.get(
+    `/messages/conversations/${conversationId}?${params.toString()}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
 
   return response.data;
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ClientSelector from "../../components/playground/ClientSelector";
 import MessageBubble from "../../components/playground/MessageBubble";
 import ConversationHeader from "../../components/playground/ConversationHeader";
@@ -9,12 +9,15 @@ import usePlaygroundProject from "../../hooks/usePlaygroundProject";
 import usePlaygroundAuth from "../../hooks/usePlaygroundAuth";
 import useClients from "../../hooks/useClients";
 import useConversation from "../../hooks/useConversation";
-import useAutoScroll from "../../hooks/useAutoScroll";
+import useConversationScroll from "../../hooks/useConversationScroll";
 
 const Playground = () => {
+  // TODO RESET WHEN FETCHING OLDER MESSAGES WHEN SWITCHED CLIENT
+
   const [messageInput, setMessageInput] = useState("");
 
   const { project } = usePlaygroundProject();
+
   const { clients, refreshClients } = useClients(project?.projectCode);
   const {
     clientAuth,
@@ -23,11 +26,18 @@ const Playground = () => {
     setSelectedRecipient,
     loginClient,
   } = usePlaygroundAuth(project);
-  const { messages, sendMessage } = useConversation(
+
+  const { messages, sendMessage, loadOlderMessages } = useConversation(
     clientAuth,
     selectedRecipient,
   );
-  const messagesContainerRef = useAutoScroll(messages);
+
+  const { containerRef: messagesContainerRef } = useConversationScroll(
+    messages,
+    clientAuth?.client._id,
+    selectedRecipient,
+    loadOlderMessages,
+  );
 
   const recipient = availableClients.find(
     (client) => client._id === selectedRecipient,

@@ -5,8 +5,12 @@ import * as messageService from "../services/message.service";
 import * as socketService from "../services/socket.service";
 
 const useConversation = (clientAuth, selectedRecipient) => {
+  const PAGE_SIZE = 10;
+
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const loadConversation = useCallback(async () => {
     if (!clientAuth || !selectedRecipient) return;
@@ -28,6 +32,7 @@ const useConversation = (clientAuth, selectedRecipient) => {
         await conversationService.getConversationMessages(
           conversationResponse.data._id,
           clientAuth.accessToken,
+          10,
         );
 
       setMessages(messagesResponse.data);
@@ -35,6 +40,45 @@ const useConversation = (clientAuth, selectedRecipient) => {
       console.error(error);
     }
   }, [clientAuth, selectedRecipient]);
+
+  useEffect(() => {
+    setLoadingOlder(false);
+    setHasMore(true);
+  }, [clientAuth?.client._id, selectedRecipient]);
+
+  const loadOlderMessages = useCallback(async () => {
+    if (!conversation || loadingOlder || !hasMore) return;
+
+    const oldestMessage = messages[0];
+
+    if (!oldestMessage) return;
+
+    try {
+      setLoadingOlder(true);
+
+      const response = await conversationService.getConversationMessages(
+        conversation._id,
+        clientAuth.accessToken,
+        PAGE_SIZE,
+        oldestMessage.createdAt,
+      );
+
+      const olderMessages = response.data;
+
+      if (olderMessages.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      setMessages((prev) => [...olderMessages, ...prev]);
+
+      if (olderMessages.length < PAGE_SIZE) {
+        setHasMore(false);
+      }
+    } finally {
+      setLoadingOlder(false);
+    }
+  }, [conversation, clientAuth, messages, loadingOlder, hasMore]);
 
   useEffect(() => {
     loadConversation();
@@ -80,8 +124,11 @@ const useConversation = (clientAuth, selectedRecipient) => {
   return {
     conversation,
     messages,
+    loadingOlder,
+    hasMore,
     sendMessage,
     loadConversation,
+    loadOlderMessages,
   };
 };
 

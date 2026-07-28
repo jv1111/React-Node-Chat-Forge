@@ -37,12 +37,30 @@ const sendMessage = async ({
   };
 };
 
-const getConversationMessages = async (conversationId) => {
-  return await Message.find({
+const getConversationMessages = async ({
+  conversationId,
+  limit = 10,
+  before,
+}) => {
+  console.log("SERVICE");
+  console.log({ conversationId, limit, before });
+
+  const query = {
     conversation: conversationId,
-  })
+  };
+
+  if (before) {
+    query.createdAt = { $lt: new Date(before) };
+  }
+
+  const messages = await Message.find(query)
     .populate("sender", "firstName middleName lastName")
-    .sort({ createdAt: 1 });
+    .sort({ createdAt: -1 })
+    .limit(limit);
+
+  console.log("Returned:", messages.length);
+
+  return messages.reverse();
 };
 
 module.exports = {

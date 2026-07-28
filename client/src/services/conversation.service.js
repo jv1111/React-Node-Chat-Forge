@@ -8,8 +8,18 @@ const getConversation = async (participants, accessToken) => {
   return conversationApi.getConversation(participants, accessToken);
 };
 
-const getConversationMessages = async (conversationId, accessToken) => {
-  return conversationApi.getConversationMessages(conversationId, accessToken);
+const getConversationMessages = async (
+  conversationId,
+  accessToken,
+  limit = 10,
+  before = null,
+) => {
+  return conversationApi.getConversationMessages(
+    conversationId,
+    accessToken,
+    limit,
+    before,
+  );
 };
 
 export { getClientConversations, getConversation, getConversationMessages };
