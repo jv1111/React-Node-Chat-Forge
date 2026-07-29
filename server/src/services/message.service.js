@@ -42,9 +42,6 @@ const getConversationMessages = async ({
   limit = 10,
   before,
 }) => {
-  console.log("SERVICE");
-  console.log({ conversationId, limit, before });
-
   const query = {
     conversation: conversationId,
   };
@@ -57,8 +54,6 @@ const getConversationMessages = async ({
     .populate("sender", "firstName middleName lastName")
     .sort({ createdAt: -1 })
     .limit(limit);
-
-  console.log("Returned:", messages.length);
 
   return messages.reverse();
 };

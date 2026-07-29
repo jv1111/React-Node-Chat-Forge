@@ -27,13 +27,6 @@ const getConversationMessages = async (req, res) => {
     const { conversationId } = req.params;
     const { limit = 10, before } = req.query;
 
-    console.log("================ GET MESSAGES CONTROLLER ================");
-    console.log("limit:", limit);
-    console.log("before:", before);
-    console.log(
-      "================ END GET MESSAGES CONTROLLER ================",
-    );
-
     const messages = await messageService.getConversationMessages({
       conversationId,
       limit: Number(limit),
