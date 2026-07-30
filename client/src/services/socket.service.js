@@ -22,6 +22,10 @@ export const onMessage = (callback) => {
   getSocket().on(SOCKET_EVENTS.MESSAGE, callback);
 };
 
+export const onNewConversationMessage = (callback) => {
+  getSocket().on(SOCKET_EVENTS.NEW_CONVERSATION, callback);
+};
+
 export const offMessage = (callback) => {
   getSocket().off(SOCKET_EVENTS.MESSAGE, callback);
 };

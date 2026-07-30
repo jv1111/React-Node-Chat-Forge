@@ -7,8 +7,6 @@ module.exports = (io, socket) => {
   });
 
   socket.on(SOCKET_EVENTS.LEAVE_ROOM, (room) => {
-    console.log(`[Socket] ${socket.id} left room: ${room}`);
-
     socket.leave(room);
   });
 
@@ -21,10 +19,24 @@ module.exports = (io, socket) => {
         content,
       });
 
-      io.to(response.conversation._id.toString()).emit(
-        SOCKET_EVENTS.MESSAGE,
-        response.message,
-      );
+      if (!response.conversationCreated) {
+        io.to(response.conversation._id.toString()).emit(
+          SOCKET_EVENTS.MESSAGE,
+          response.message,
+        );
+      }
+
+      if (response.conversationCreated) {
+        io.to(socket.user._id.toString()).emit(
+          SOCKET_EVENTS.NEW_CONVERSATION,
+          response.message,
+        );
+
+        io.to(toClientId.toString()).emit(
+          SOCKET_EVENTS.NEW_CONVERSATION,
+          response.message,
+        );
+      }
     } catch (error) {
       console.error(error);
 

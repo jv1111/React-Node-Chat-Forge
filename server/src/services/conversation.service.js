@@ -1,22 +1,20 @@
 const Conversation = require("../models/conversation.model");
 const projectService = require("./project.service");
 
-const findOrCreateConversation = async (projectId, senderId, receiverId) => {
-  let conversation = await Conversation.findOne({
+const findConversation = async (projectId, participants) => {
+  return Conversation.findOne({
     project: projectId,
     participants: {
-      $all: [senderId, receiverId],
+      $all: participants,
     },
   });
+};
 
-  if (!conversation) {
-    conversation = await Conversation.create({
-      project: projectId,
-      participants: [senderId, receiverId],
-    });
-  }
-
-  return conversation;
+const createConversation = async (projectId, participants) => {
+  return Conversation.create({
+    project: projectId,
+    participants,
+  });
 };
 
 const getClientConversations = async (projectCode, clientId) => {
@@ -40,7 +38,8 @@ const getConversation = async (projectId, participants) => {
 };
 
 module.exports = {
-  findOrCreateConversation,
+  findConversation,
+  createConversation,
   getClientConversations,
   getConversation,
 };

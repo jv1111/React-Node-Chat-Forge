@@ -30,8 +30,6 @@ const Register = () => {
         password: values.password,
       });
 
-      console.log(response);
-
       navigate("/");
     } catch (error) {
       setStatus(error.response?.data?.message ?? "Something went wrong.");

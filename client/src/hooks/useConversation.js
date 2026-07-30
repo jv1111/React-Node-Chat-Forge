@@ -101,14 +101,17 @@ const useConversation = (clientAuth, selectedRecipient) => {
 
     const handleMessage = (message) => {
       setMessages((prev) => {
-        console.log("Last previous message:", prev[prev.length - 1]);
-        console.log("Incoming socket message:", message);
-
         return [...prev, message];
       });
     };
 
+    const handleNewMessage = (message) => {
+      setMessages((prev) => [...prev, message]);
+      socketService.joinRoom(message.conversation);
+    };
+
     socketService.onMessage(handleMessage);
+    socketService.onNewConversationMessage(handleNewMessage);
 
     return () => {
       socketService.offMessage(handleMessage);

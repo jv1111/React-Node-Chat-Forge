@@ -17,11 +17,21 @@ const sendMessage = async ({
     throw new Error("A client cannot send a message to themselves.");
   }
 
-  const conversation = await conversationService.findOrCreateConversation(
-    projectId,
+  let conversation = await conversationService.findConversation(projectId, [
     sender._id,
     receiver._id,
-  );
+  ]);
+
+  let conversationCreated = false;
+
+  if (!conversation) {
+    conversation = await conversationService.createConversation(projectId, [
+      sender._id,
+      receiver._id,
+    ]);
+
+    conversationCreated = true;
+  }
 
   const message = await Message.create({
     conversation: conversation._id,
@@ -34,6 +44,7 @@ const sendMessage = async ({
   return {
     conversation,
     message,
+    conversationCreated,
   };
 };
 

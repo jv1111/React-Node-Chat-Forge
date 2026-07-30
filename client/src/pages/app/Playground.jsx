@@ -12,7 +12,8 @@ import useConversation from "../../hooks/useConversation";
 import useConversationScroll from "../../hooks/useConversationScroll";
 
 const Playground = () => {
-  // TODO RESET WHEN FETCHING OLDER MESSAGES WHEN SWITCHED CLIENT
+  // TODO AUTO SCROLL DOWN ON SOCKET RECEIVE MESSAGE ONLY IF THE CURSOR IS AT THE BOTTM ALREADY
+  // TODO SOCKET IS NOT WORKING IF THE CONVERSATION DOESNT EXIST YET
 
   const [messageInput, setMessageInput] = useState("");
 

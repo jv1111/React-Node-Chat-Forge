@@ -26,7 +26,6 @@ const initialValues = {
 const Login = () => {
   // temp
   const auth = useSelector((state) => state.auth);
-  console.log(auth);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,14 +39,10 @@ const Login = () => {
         password: values.password,
       });
 
-      console.log(response);
       dispatch(setUser(response.data.user));
 
       //navigate("/dashboard");
     } catch (error) {
-      console.log(error);
-      console.log(error.response);
-
       setStatus(error.response?.data?.message ?? "Something went wrong.");
     } finally {
       setSubmitting(false);
