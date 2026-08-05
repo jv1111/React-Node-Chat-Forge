@@ -4,8 +4,8 @@ export const sidebarLinks = [
     to: "/dashboard",
   },
   {
-    label: "Get Started",
-    to: "/getting-started",
+    label: "Manage Projects",
+    to: "/manage-projects",
   },
   {
     label: "Documentation",

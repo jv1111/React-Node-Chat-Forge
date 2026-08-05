@@ -9,7 +9,7 @@ import AuthPanel from "../../components/auth/AuthPanel";
 import Logo from "../../components/auth/Logo";
 
 import Button from "../../components/ui/Button";
-import Input from "../../components/ui/Input";
+import FormikInput from "../../components/ui/FormikInput";
 import PasswordInput from "../../components/auth/PasswordInput";
 
 import { loginSchema } from "../../validation";
@@ -108,7 +108,7 @@ const Login = () => {
         >
           {({ isSubmitting, status }) => (
             <Form className="flex flex-col gap-5">
-              <Input
+              <FormikInput
                 name="username"
                 label="Username"
                 placeholder="johnsmith"

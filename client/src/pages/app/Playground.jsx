@@ -10,6 +10,7 @@ import usePlaygroundAuth from "../../hooks/usePlaygroundAuth";
 import useClients from "../../hooks/useClients";
 import useConversation from "../../hooks/useConversation";
 import useConversationScroll from "../../hooks/useConversationScroll";
+import Card from "../../components/ui/Card";
 
 const Playground = () => {
   // TODO AUTO SCROLL DOWN ON SOCKET RECEIVE MESSAGE ONLY IF THE CURSOR IS AT THE BOTTM ALREADY
@@ -96,7 +97,7 @@ const Playground = () => {
         </aside>
 
         {/* CHAT */}
-        <section className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
+        <Card className="flex flex-col overflow-hidden rounded-2xl">
           <ConversationHeader
             client={clientAuth?.client}
             recipient={recipient}
@@ -124,7 +125,7 @@ const Playground = () => {
             onChange={setMessageInput}
             onSend={handleSendMessage}
           />
-        </section>
+        </Card>
       </div>
     </section>
   );

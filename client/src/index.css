@@ -107,6 +107,10 @@
   .auth-description {
     @apply mt-1.5 text-sm text-white/50;
   }
+
+  .dashboard-card {
+    @apply rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl;
+  }
 }
 
 @layer utilities {

@@ -1,19 +1,13 @@
-import { useField } from "formik";
-
-const Input = ({ label, ...props }) => {
-  const [field, meta] = useField(props.name);
-
+const Input = ({ label, className = "", ...props }) => {
   return (
-    <div className="auth-input-group">
-      <label htmlFor={props.name} className="label-auth">
-        {label}
-      </label>
-
-      <input {...field} {...props} id={props.name} className="input-auth" />
-
-      {meta.touched && meta.error && (
-        <p className="text-sm text-danger mt-1">{meta.error}</p>
+    <div>
+      {label && (
+        <label htmlFor={props.id || props.name} className="label-auth">
+          {label}
+        </label>
       )}
+
+      <input {...props} className={`input-auth mt-2 ${className}`} />
     </div>
   );
 };
