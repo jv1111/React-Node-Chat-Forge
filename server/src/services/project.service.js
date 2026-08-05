@@ -31,6 +31,28 @@ const createProject = async (developerId, name) => {
   return project;
 };
 
+const getProjects = async (developerId, page = 1, limit = 5) => {
+  const skip = (page - 1) * limit;
+
+  const [projects, total] = await Promise.all([
+    Project.find({ developer: developerId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    Project.countDocuments({ developer: developerId }),
+  ]);
+
+  return {
+    projects,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
 const findByProjectCode = async (projectCode) => {
   const project = await Project.findOne({ projectCode });
 
@@ -54,9 +76,33 @@ const findByDeveloperAndName = async (developerId, name) => {
   return project;
 };
 
+const regenerateProjectCode = async (developerId, projectId) => {
+  const project = await Project.findOne({
+    _id: projectId,
+    developer: developerId,
+  });
+
+  if (!project) {
+    throw new Error("Project not found.");
+  }
+
+  let projectCode;
+
+  do {
+    projectCode = generateProjectCode();
+  } while (await Project.exists({ projectCode }));
+
+  project.projectCode = projectCode;
+  await project.save();
+
+  return project;
+};
+
 module.exports = {
   generateProjectCode,
   createProject,
+  getProjects,
   findByProjectCode,
   findByDeveloperAndName,
+  regenerateProjectCode,
 };

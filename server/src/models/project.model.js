@@ -20,7 +20,6 @@ const projectSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      immutable: true,
       index: true,
     },
   },
