@@ -4,4 +4,8 @@ const getProject = async (name) => {
   return projectApi.getProject(name);
 };
 
-export { getProject };
+const createProject = async (name) => {
+  return projectApi.createProject(name);
+};
+
+export { getProject, createProject };

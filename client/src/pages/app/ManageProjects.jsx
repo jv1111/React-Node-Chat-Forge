@@ -4,11 +4,37 @@ import SectionBadge from "../../components/ui/SectionBadge";
 import { sampleProjects } from "../../data/sampleProjects";
 import Card from "../../components/ui/Card";
 import Modal from "../../components/ui/Model";
-import Input from "../../components/ui/Input";
+import { Formik, Form } from "formik";
+import FormikInput from "../../components/ui/FormikInput";
+
+import * as projectService from "../../services/project.service";
+
+const initialValues = {
+  name: "",
+};
 
 const ManageProjects = () => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
-  const [projectName, setProjectName] = useState("");
+
+  const handleCreateProject = async (
+    values,
+    { setSubmitting, setStatus, resetForm },
+  ) => {
+    try {
+      setStatus(null);
+
+      const response = await projectService.createProject(values.name);
+
+      console.log(response);
+
+      resetForm();
+      setOpenCreateModal(false);
+    } catch (error) {
+      setStatus(error.response?.data?.message ?? "Something went wrong.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <section className="mx-auto flex max-w-6xl flex-col gap-8">
@@ -70,31 +96,41 @@ const ManageProjects = () => {
         title="Create Project"
         onClose={() => setOpenCreateModal(false)}
       >
-        <div className="space-y-5">
-          <div>
-            <Input
-              label="Project Name"
-              placeholder="My Project"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-            />
-          </div>
+        <Formik initialValues={initialValues} onSubmit={handleCreateProject}>
+          {({ isSubmitting, status, resetForm }) => (
+            <Form className="space-y-5">
+              <FormikInput
+                name="name"
+                label="Project Name"
+                placeholder="My Project"
+              />
 
-          <div className="flex justify-end gap-3">
-            <Button
-              variant="secondary"
-              className="w-auto"
-              onClick={() => {
-                setProjectName("");
-                setOpenCreateModal(false);
-              }}
-            >
-              Cancel
-            </Button>
+              {status && (
+                <p className="rounded-lg border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">
+                  {status}
+                </p>
+              )}
 
-            <Button className="w-auto">Create Project</Button>
-          </div>
-        </div>
+              <div className="flex justify-end gap-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-auto"
+                  onClick={() => {
+                    resetForm();
+                    setOpenCreateModal(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+
+                <Button type="submit" className="w-auto" loading={isSubmitting}>
+                  Create Project
+                </Button>
+              </div>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </section>
   );
