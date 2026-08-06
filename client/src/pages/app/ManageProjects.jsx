@@ -18,6 +18,7 @@ const ManageProjects = () => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [codeError, setCodeError] = useState("");
+  const [projectCodeMessage, setProjectCodeMessage] = useState("");
 
   const {
     projects,
@@ -28,6 +29,8 @@ const ManageProjects = () => {
     refreshProjects,
   } = useProjects();
 
+  // TODO DISPLAY THE DATA CREATE A UTILITY FUNCTION TO FORMAT THE DATE
+
   const handleCreateProject = async (
     values,
     { setSubmitting, setStatus, resetForm },
@@ -35,10 +38,18 @@ const ManageProjects = () => {
     try {
       setStatus(null);
 
-      await projectService.createProject(values.name);
+      const response = await projectService.createProject(values.name);
+      const project = response.data;
 
       resetForm();
       setOpenCreateModal(false);
+
+      setCodeError("");
+      setProjectCodeMessage(
+        "Project created successfully. Save this project code—you'll use it to authenticate clients.",
+      );
+      setSelectedProject(project);
+
       refreshProjects();
     } catch (error) {
       setStatus(error.response?.data?.message ?? "Something went wrong.");
@@ -47,8 +58,16 @@ const ManageProjects = () => {
     }
   };
 
+  const handleCopyProjectCode = async () => {
+    if (!selectedProject?.projectCode) return;
+
+    await navigator.clipboard.writeText(selectedProject.projectCode);
+    setProjectCodeMessage("Project code copied to clipboard.");
+  };
+
   const handleOpenProjectCode = (project) => {
     setCodeError("");
+    setProjectCodeMessage("");
     setSelectedProject(project);
   };
 
@@ -61,6 +80,7 @@ const ManageProjects = () => {
       const updatedProject = await regenerateProjectCode(selectedProject._id);
 
       setSelectedProject(updatedProject);
+      setProjectCodeMessage("Project code regenerated successfully.");
     } catch (error) {
       setCodeError(
         error.response?.data?.message ?? "Unable to regenerate project code.",
@@ -205,10 +225,19 @@ const ManageProjects = () => {
       <Modal
         open={Boolean(selectedProject)}
         title="Project Code"
-        onClose={() => setSelectedProject(null)}
+        onClose={() => {
+          setSelectedProject(null);
+          setProjectCodeMessage("");
+        }}
       >
         <div className="space-y-5">
           <div>
+            {projectCodeMessage && (
+              <p className="rounded-lg border border-success/20 bg-success/10 px-3 py-2 text-sm text-success">
+                {projectCodeMessage}
+              </p>
+            )}
+
             <p className="text-sm font-medium text-white">
               {selectedProject?.name}
             </p>
@@ -231,6 +260,14 @@ const ManageProjects = () => {
               onClick={() => setSelectedProject(null)}
             >
               Close
+            </Button>
+
+            <Button
+              variant="secondary"
+              className="w-auto"
+              onClick={handleCopyProjectCode}
+            >
+              Copy
             </Button>
 
             <Button

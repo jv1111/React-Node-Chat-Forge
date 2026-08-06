@@ -14,7 +14,6 @@ import Card from "../../components/ui/Card";
 
 const Playground = () => {
   // TODO AUTO SCROLL DOWN ON SOCKET RECEIVE MESSAGE ONLY IF THE CURSOR IS AT THE BOTTM ALREADY
-  // TODO SOCKET IS NOT WORKING IF THE CONVERSATION DOESNT EXIST YET
 
   const [messageInput, setMessageInput] = useState("");
 
