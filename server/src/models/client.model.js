@@ -9,6 +9,12 @@ const clientSchema = new mongoose.Schema(
       index: true,
     },
 
+    externalUserId: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     username: {
       type: String,
       required: true,
@@ -54,6 +60,21 @@ clientSchema.index(
     username: 1,
   },
   { unique: true },
+);
+
+// Prevent the same external user from being linked
+// more than once within the same project
+clientSchema.index(
+  {
+    project: 1,
+    externalUserId: 1,
+  },
+  {
+    unique: true,
+    partialFilterExpression: {
+      externalUserId: { $exists: true, $type: "string" },
+    },
+  },
 );
 
 module.exports = mongoose.model("Client", clientSchema);

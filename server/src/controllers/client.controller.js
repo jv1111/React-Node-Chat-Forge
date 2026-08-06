@@ -2,11 +2,19 @@ const clientService = require("../services/client.service");
 
 const createClient = async (req, res) => {
   try {
-    const { projectCode, username, password, firstName, middleName, lastName } =
-      req.body;
+    const {
+      projectCode,
+      externalUserId,
+      username,
+      password,
+      firstName,
+      middleName,
+      lastName,
+    } = req.body;
 
     const client = await clientService.createClient({
       projectCode,
+      externalUserId,
       username,
       password,
       firstName,

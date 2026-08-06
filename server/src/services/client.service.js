@@ -27,6 +27,7 @@ const DEFAULT_CLIENTS = [
 
 const createClient = async ({
   projectCode,
+  externalUserId,
   username,
   password,
   firstName,
@@ -54,10 +55,20 @@ const createClient = async ({
     throw new Error("Username is already taken.");
   }
 
+  const existingClient = await Client.findOne({
+    project: project._id,
+    externalUserId,
+  });
+
+  if (existingClient) {
+    throw new Error("This user is already registered in this project.");
+  }
+
   const hashedPassword = await hashPassword(password);
 
   return Client.create({
     project: project._id,
+    externalUserId,
     username: normalizedClient.username,
     password: hashedPassword,
     firstName: normalizedClient.firstName,

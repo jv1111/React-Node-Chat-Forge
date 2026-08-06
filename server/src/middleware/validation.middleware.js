@@ -64,23 +64,34 @@ const validateLogin = (req, res, next) => {
 const validateCreateClient = (req, res, next) => {
   let {
     projectCode,
+    externalUserId,
     username,
+    password,
     firstName,
     middleName = "",
     lastName,
   } = req.body;
 
   projectCode = projectCode?.trim();
+  externalUserId = externalUserId?.trim();
   username = username?.trim().toLowerCase();
+  password = password?.trim();
   firstName = firstName?.trim();
   middleName = middleName?.trim();
   lastName = lastName?.trim();
 
-  if (!projectCode || !username || !firstName || !lastName) {
+  if (
+    !projectCode ||
+    !externalUserId ||
+    !username ||
+    !password ||
+    !firstName ||
+    !lastName
+  ) {
     return res.status(400).json({
       success: false,
       message:
-        "Project code, username, first name, and last name are required.",
+        "Project code, external user ID, username, password, first name, and last name are required.",
     });
   }
 
@@ -92,9 +103,19 @@ const validateCreateClient = (req, res, next) => {
     });
   }
 
+  if (!validatePassword(password)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and symbol.",
+    });
+  }
+
   req.body = {
     projectCode,
+    externalUserId,
     username,
+    password,
     firstName,
     middleName,
     lastName,
