@@ -9,10 +9,12 @@ const {
   createClient,
   getClients,
   getAvailableClients,
+  findClientByExternalUserId,
 } = require("../controllers/client.controller");
 
 router.post("/", validateCreateClient, createClient);
 router.get("/", getClients);
 router.get("/available", authenticateClient, getAvailableClients);
+router.get("/lookup", findClientByExternalUserId);
 
 module.exports = router;

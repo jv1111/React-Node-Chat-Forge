@@ -35,6 +35,28 @@ const createClient = async (req, res) => {
   }
 };
 
+const findClientByExternalUserId = async (req, res) => {
+  try {
+    const { projectCode, externalUserId } = req.query;
+
+    const client = await clientService.findClientByExternalUserId({
+      projectCode,
+      externalUserId,
+    });
+
+    return res.status(200).json({
+      success: true,
+      found: Boolean(client),
+      data: client,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 const getClients = async (req, res) => {
   try {
     const { projectCode, page = 1, limit = 20 } = req.query;
@@ -80,4 +102,5 @@ module.exports = {
   createClient,
   getClients,
   getAvailableClients,
+  findClientByExternalUserId,
 };

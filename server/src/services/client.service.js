@@ -90,6 +90,15 @@ const findById = async (projectId, clientId) => {
   return client;
 };
 
+const findClientByExternalUserId = async ({ projectCode, externalUserId }) => {
+  const project = await projectService.findByProjectCode(projectCode);
+
+  return Client.findOne({
+    project: project._id,
+    externalUserId,
+  }).select("-password");
+};
+
 const createDefaultClients = async (projectId) => {
   const clients = await Promise.all(
     DEFAULT_CLIENTS.map(async (client) => ({
@@ -180,6 +189,7 @@ module.exports = {
   createClient,
   createDefaultClients,
   findById,
+  findClientByExternalUserId,
   getClients,
   getAvailableClients,
 };
