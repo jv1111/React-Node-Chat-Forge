@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 
 const Project = require("../models/project.model");
+const { getPagination, getPaginationMetadata } = require("../utils/pagination");
 
 const generateProjectCode = () => {
   return `prj_${crypto.randomBytes(8).toString("hex")}`;
@@ -32,25 +33,27 @@ const createProject = async (developerId, name) => {
 };
 
 const getProjects = async (developerId, page = 1, limit = 5) => {
-  // TODO MAKE THIS CLEANER BY MOVING THE PAGINATION LOGIC TO A UTILITY FUNCTION
-  const skip = (page - 1) * limit;
+  const {
+    page: currentPage,
+    limit: safeLimit,
+    skip,
+  } = getPagination(page, limit);
 
   const [projects, total] = await Promise.all([
     Project.find({ developer: developerId })
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit),
-    Project.countDocuments({ developer: developerId }),
+      .limit(safeLimit)
+      .lean(),
+
+    Project.countDocuments({
+      developer: developerId,
+    }),
   ]);
 
   return {
     projects,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
-    },
+    pagination: getPaginationMetadata(currentPage, safeLimit, total),
   };
 };
 

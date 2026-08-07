@@ -1,8 +1,10 @@
+const crypto = require("crypto");
 const { hashPassword } = require("../utils/hash");
 
 const projectService = require("./project.service");
 const Client = require("../models/client.model");
 const { capitalize } = require("../utils/format");
+const { getPagination, getPaginationMetadata } = require("../utils/pagination");
 
 const DEFAULT_CLIENTS = [
   {
@@ -126,6 +128,7 @@ const createDefaultClients = async (projectId) => {
   const clients = await Promise.all(
     DEFAULT_CLIENTS.map(async (client) => ({
       project: projectId,
+      externalUserId: `default_${crypto.randomUUID()}`,
       username: client.username,
       password: await hashPassword(client.password),
       firstName: client.firstName,
@@ -140,9 +143,11 @@ const createDefaultClients = async (projectId) => {
 const getClients = async ({ projectCode, page = 1, limit = 20 }) => {
   const project = await projectService.findByProjectCode(projectCode);
 
-  const safeLimit = Math.min(Math.max(limit, 1), 100);
-
-  const skip = (page - 1) * safeLimit;
+  const {
+    page: currentPage,
+    limit: safeLimit,
+    skip,
+  } = getPagination(page, limit);
 
   const [clients, total] = await Promise.all([
     Client.find({ project: project._id })
@@ -158,14 +163,7 @@ const getClients = async ({ projectCode, page = 1, limit = 20 }) => {
 
   return {
     clients,
-    pagination: {
-      page,
-      limit: safeLimit,
-      total,
-      totalPages: Math.ceil(total / safeLimit),
-      hasNextPage: page * safeLimit < total,
-      hasPreviousPage: page > 1,
-    },
+    pagination: getPaginationMetadata(currentPage, safeLimit, total),
   };
 };
 
@@ -175,9 +173,11 @@ const getAvailableClients = async ({
   page = 1,
   limit = 20,
 }) => {
-  const safeLimit = Math.min(Math.max(limit, 1), 100);
-
-  const skip = (page - 1) * safeLimit;
+  const {
+    page: currentPage,
+    limit: safeLimit,
+    skip,
+  } = getPagination(page, limit);
 
   const filter = {
     project: projectId,
@@ -197,14 +197,7 @@ const getAvailableClients = async ({
 
   return {
     clients,
-    pagination: {
-      page,
-      limit: safeLimit,
-      total,
-      totalPages: Math.ceil(total / safeLimit),
-      hasNextPage: page * safeLimit < total,
-      hasPreviousPage: page > 1,
-    },
+    pagination: getPaginationMetadata(currentPage, safeLimit, total),
   };
 };
 
