@@ -32,6 +32,7 @@ const createProject = async (developerId, name) => {
 };
 
 const getProjects = async (developerId, page = 1, limit = 5) => {
+  // TODO MAKE THIS CLEANER BY MOVING THE PAGINATION LOGIC TO A UTILITY FUNCTION
   const skip = (page - 1) * limit;
 
   const [projects, total] = await Promise.all([

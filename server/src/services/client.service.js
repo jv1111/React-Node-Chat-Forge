@@ -25,6 +25,36 @@ const DEFAULT_CLIENTS = [
   },
 ];
 
+const generateUniqueUsername = async (projectId, baseUsername) => {
+  // Keep the requested username if it's still available.
+  const usernameExists = await Client.exists({
+    project: projectId,
+    username: baseUsername,
+  });
+
+  if (!usernameExists) {
+    return baseUsername;
+  }
+
+  // Username already exists. Generate username01, username02, ...
+  let counter = 1;
+
+  while (true) {
+    const username = `${baseUsername}${String(counter).padStart(2, "0")}`;
+
+    const exists = await Client.exists({
+      project: projectId,
+      username,
+    });
+
+    if (!exists) {
+      return username;
+    }
+
+    counter++;
+  }
+};
+
 const createClient = async ({
   projectCode,
   externalUserId,
@@ -34,9 +64,6 @@ const createClient = async ({
   middleName = "",
   lastName,
 }) => {
-  // Normalize client names for consistent storage and duplicate checks.
-  // Example:
-  //   "jOHn"        -> "John"
   const normalizedClient = {
     username: username.trim().toLowerCase(),
     firstName: capitalize(firstName),
@@ -45,15 +72,6 @@ const createClient = async ({
   };
 
   const project = await projectService.findByProjectCode(projectCode);
-
-  const existingUsername = await Client.findOne({
-    project: project._id,
-    username: normalizedClient.username,
-  });
-
-  if (existingUsername) {
-    throw new Error("Username is already taken.");
-  }
 
   const existingClient = await Client.findOne({
     project: project._id,
@@ -64,12 +82,17 @@ const createClient = async ({
     throw new Error("This user is already registered in this project.");
   }
 
+  const uniqueUsername = await generateUniqueUsername(
+    project._id,
+    normalizedClient.username,
+  );
+
   const hashedPassword = await hashPassword(password);
 
   return Client.create({
     project: project._id,
     externalUserId,
-    username: normalizedClient.username,
+    username: uniqueUsername,
     password: hashedPassword,
     firstName: normalizedClient.firstName,
     middleName: normalizedClient.middleName,
